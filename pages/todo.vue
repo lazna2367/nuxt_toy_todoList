@@ -6,8 +6,10 @@
                 <a-input-search placeholder='할 일을 입력해주세요.' enter-button="추가" size="large" v-model="inputValue" @search="addTodo"/>
                 <div class="card-line" v-if="todoListData.length !== 0"></div>
                 <div v-for="(val,idx) in todoListData" :key="idx" class="todo-list" :id="`check_${idx}`">
-                    <a-checkbox :checked="checkList[idx]" @change="checkTodoList(idx)" class="card-checkbox">{{val}}</a-checkbox>
-                    <a-icon type="close" @click="delTodo(idx)" class="close-icon"/>
+                    <!-- <a-checkbox :checked="checkList[idx]" @change="checkTodoList(idx)" class="card-checkbox">{{val}}</a-checkbox> -->
+                    <a-checkbox :checked="checkList[idx]" @change="checkTodoList(idx)" class="card-checkbox" />
+                    <span class="check-text">{{val}}</span>
+                    <a-icon type="close" @click="delTodo(idx)" class="close-icon"/>                    
                 </div>
             </a-card-grid>
             <!-- <a-card-grid style="width:50%">
@@ -28,14 +30,28 @@ export default {
         delTodo(idx){
             this.todoListData.splice(idx,1)
             this.checkList.splice(idx,1)
+            
+            this.checkList.forEach((v,i) => {
+                let check = document.querySelector(`#check_${i} .card-checkbox > span:last-child`)
+                if(check){
+                    if(this.checkList[i]){                    
+                        check.style.textDecoration = 'none'
+                    }else {
+                        check.style.textDecoration = 'line-through'
+                    }
+                }
+            })
+            
         },
         checkTodoList(idx){
             this.checkList.splice(idx,1,!this.checkList[idx])            
-            let check = document.querySelector(`#check_${idx} .card-checkbox > span:last-child`)            
+            let check = document.querySelector(`#check_${idx} .card-checkbox > span:last-child`)
             if(check){
                 if(this.checkList[idx]){
+                    console.log('동작1')
                     check.style.textDecoration = 'none'
                 }else {
+                    console.log('동작2')
                     check.style.textDecoration = 'line-through'
                 }
                 
@@ -81,11 +97,8 @@ export default {
                     width: 9px;
                     height: 14px;
                 }
-                >.card-checkbox{
+                .check-text {
                     font-size: 30px;
-                    >span:last-child{
-                        margin-left: 10px;
-                    }
                 }
                 >.close-icon{
                     float: right;

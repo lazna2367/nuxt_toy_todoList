@@ -9,25 +9,30 @@
         mode="horizontal"        
         style="float: right; line-height: 65px;"
       >
-        <a-menu-item key="1" style="float: left;" @click="$router.push({path: '/'})">Home</a-menu-item>
-        <a-menu-item key="2" style="float: left;" @click="$router.push({path: '/todo'})">Todo</a-menu-item>
-        <a-menu-item key="3" style="float: left;" @click="$router.push({path: '/profile'})">Profile</a-menu-item>
+      
+        <a-menu-item key="1" style="float: left;" :class="$route.path === '/' ? 'ant-menu-item-selected' : ''" @click="$router.push('/')">Home</a-menu-item>
+        <a-menu-item key="2" style="float: left;" :class="$route.path === '/todo' ? 'ant-menu-item-selected' : ''" @click="$router.push('/todo')">Todo</a-menu-item>
+        <a-menu-item key="3" style="float: left;" :class="$route.path === '/profile' ? 'ant-menu-item-selected' : ''" @click="$router.push('/profile')">Profile</a-menu-item>
       </a-menu>
     </a-layout-header>
-    <a-layout-content style="background: white;">
+    <a-layout-content style="background: white;">      
       <nuxt />
     </a-layout-content>
       
   </a-layout>
 </template>
 <script>
+import { mapState , mapMutations } from 'vuex';
 export default {
   data() {
-    return {
-
+    return {      
     }
+  },    
+  computed: {
+    ...mapState(['fullPath']),
   },
   methods: {
+    ...mapMutations(['setFullPath'])
   },
 }
 </script>
