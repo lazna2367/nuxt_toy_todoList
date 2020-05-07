@@ -1,0 +1,26 @@
+{
+  "name": "nuxt-todoList",
+  "version": "1.0.0",
+  "description": "My fabulous Nuxt.js project",
+  "author": "hsl",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.3.6",
+    "@nuxtjs/dotenv": "^1.4.0",
+    "ant-design-vue": "^1.5.4",
+    "moment": "2.24.0",
+    "node-sass": "^4.14.1",
+    "nuxt": "^2.0.0",
+    "sass-loader": "^8.0.2"
+  },
+  "resolutions": {
+    "moment": "2.24.0"
+  },
+  "devDependencies": {}
+}
