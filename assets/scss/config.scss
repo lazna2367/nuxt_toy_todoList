@@ -1,0 +1,397 @@
+/* font-family CSS Style */
+@font-face {
+    font-family: 'NotoSansKR-Bold';
+    src: url('~@/assets/font/NotoSansKR-Bold.otf');
+}
+
+@font-face {
+    font-family: 'NotoSansKR-Light';
+    src: url('~@/assets/font/NotoSansKR-Light.otf');
+}
+
+@font-face {
+    font-family: 'NotoSansKR-Medium';
+    src: url('~@/assets/font/NotoSansKR-Medium.otf');
+}
+
+@font-face {
+    font-family: 'NotoSansKR-Regular';
+    src: url('~@/assets/font/NotoSansKR-Regular.otf');
+    font-style: normal;
+    font-weight: normal;
+    unicode-range: U+0-10FFFF;
+}
+// Nanum-Gothic
+@font-face {
+    font-family: 'Nanum-Barun-Gothic-UltraLight';
+    font-style: normal;
+    font-weight: 200;
+    src: url(../font/nanum/NanumBarunGothicUltraLight.eot);
+    src: local('Nanum Barun Gothic UltraLight'),
+        local('NanumBarunGothicUltraLight'),
+        url(../font/nanum/NanumBarunGothicUltraLight.eot?#iefix)
+            format('embedded-opentype'),
+        url(../font/nanum/NanumBarunGothicUltraLight.woff2) format('woff2'),
+        url(../font/nanum/NanumBarunGothicUltraLight.woff) format('woff'),
+        url(../font/nanum/NanumBarunGothicUltraLight.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Nanum-Barun-Gothic-Light';
+    font-style: normal;
+    font-weight: 300;
+    src: url(../font/nanum/NanumBarunGothicLight.eot);
+    src: local('Nanum Barun Gothic Light'), local('NanumBarunGothicLight'),
+        url(../font/nanum/NanumBarunGothicLight.eot?#iefix)
+            format('embedded-opentype'),
+        url(../font/nanum/NanumBarunGothicLight.woff2) format('woff2'),
+        url(../font/nanum/NanumBarunGothicLight.woff) format('woff'),
+        url(../font/nanum/NanumBarunGothicLight.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Nanum-Barun-Gothic-normal';
+    font-style: normal;
+    font-weight: 400;
+    src: url(../font/nanum/NanumBarunGothic.eot);
+    src: local('Nanum Barun Gothic'), local('NanumBarunGothic'),
+        url(../font/nanum/NanumBarunGothic.eot?#iefix)
+            format('embedded-opentype'),
+        url(../font/nanum/NanumBarunGothic.woff2) format('woff2'),
+        url(../font/nanum/NanumBarunGothic.woff) format('woff'),
+        url(../font/nanum/NanumBarunGothic.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Nanum-Barun-Gothic-Bold';
+    font-style: normal;
+    font-weight: 700;
+    src: url(../font/nanum/NanumBarunGothicBold.eot);
+    src: local('Nanum Barun Gothic Bold'), local('NanumBarunGothicBold'),
+        url(../font/nanum/NanumBarunGothicBold.eot?#iefix)
+            format('embedded-opentype'),
+        url(../font/nanum/NanumBarunGothicBold.woff2) format('woff2'),
+        url(../font/nanum/NanumBarunGothicBold.woff) format('woff'),
+        url(../font/nanum/NanumBarunGothicBold.ttf) format('truetype');
+}
+
+// // mobile web reset css
+// body {
+//     -webkit-text-size-adjust: none;
+// }
+
+// /* Common CSS Style. */
+// /* 여백 초기화 */
+// body,
+// div,
+// ul,
+// li,
+// dl,
+// dd,
+// dt,
+// ol,
+// h1,
+// h2,
+// h3,
+// h4,
+// h5,
+// h6,
+// input,
+// fieldset,
+// legend,
+// p,
+// select,
+// table,
+// th,
+// td,
+// tr,
+// textarea,
+// button,
+// form,
+// figure,
+// figcaption {
+//     margin: 0;
+//     padding: 0;
+//     font-family: 'NotoSansKR-Regular';
+//     line-height: normal;
+// }
+
+// /* a 링크 초기화 */
+// a,
+// a:hover,
+// a:active {
+//     color: #000;
+//     text-decoration: none !important;
+// }
+
+// /* 폰트 초기화 */
+// // body,
+// // input,
+// // textarea,
+// // select,
+// // button,
+// // table,
+// // em,
+// // strong,
+// // span {
+// //     font-family: 'NotoSansKR-Regular', 'Nanum Gothic', 'sans-serif';
+// //     color: #707070;
+// //     font-size: 13px;
+// // }
+
+// /* 폰트 스타일 초기화 */
+// em,
+// address {
+//     font-style: normal;
+// }
+
+// /* 블릿기호 초기화 */
+// ul {
+//     list-style: none;
+// }
+
+// /* 제목 태그 초기화 */
+// h1,
+// h2,
+// h3,
+// h4,
+// h5,
+// h6 {
+//     font-size: 15px;
+//     font-weight: normal;
+// }
+
+// /* claerfix <-- float 쓸때 부모에게 클래스 주면 부모 height영역 살아남 */
+// .clearfix:before,
+// .clearfix:after {
+//     display: block;
+//     content: '';
+//     line-height: 0;
+// }
+// .clearfix:after {
+//     clear: both;
+// }
+// .clearfix:before {
+//     *zoom: 1;
+// }
+
+// /* select, input css 초기화 */
+// select,
+// input {
+//     -webkit-appearance: none; /* 화살표 숨기기 */
+//     -moz-appearance: none;
+//     appearance: none;
+//     border-radius: 0 0;
+// }
+
+// /* IE 10, 11 화살표 숨기기 */
+// select::-ms-expand {
+//     display: none;
+// }
+
+// .none {
+//     display: none !important;
+// }
+
+// img {
+//     width: 100%;
+// }
+
+// input,
+// select,
+// textarea {
+//     padding: 5px 10px;
+//     box-sizing: border-box;
+//     color: #000;
+//     outline: none;
+//     appearance: none;
+// }
+
+// input[type='color'],
+// input[type='date'],
+// input[type='datetime'],
+// input[type='datetime-local'],
+// input[type='email'],
+// input[type='month'],
+// input[type='number'],
+// input[type='password'],
+// input[type='search'],
+// input[type='tel'],
+// input[type='text'],
+// input[type='time'],
+// input[type='url'],
+// input[type='week'],
+// select:focus,
+// textarea {
+//     font-size: 14px;
+// }
+
+// button,
+// input {
+//     outline: none;
+//     border: none;
+// }
+
+// .line {
+//     position: relative;
+//     padding-top: 41.5px;
+//     padding-bottom: 41.5px;
+// }
+// .line:after {
+//     content: '';
+//     position: absolute;
+//     top: 50%;
+//     left: 0;
+//     transform: translateY(-50%);
+//     width: 9px;
+//     height: 1px;
+//     background: #000000;
+// }
+// .line2 {
+//     position: relative;
+// }
+// .line2:after {
+//     content: '';
+//     position: absolute;
+//     top: 50%;
+//     right: 0;
+//     transform: translateY(-50%);
+//     width: 1px;
+//     height: 17px;
+//     background: #cccccc;
+// }
+
+// .line3 {
+//     position: relative;
+//     padding-right: 5px;
+// }
+// .line3:after {
+//     content: '';
+//     position: absolute;
+//     top: 50%;
+//     right: 0;
+//     transform: translateY(-50%);
+//     width: 1px;
+//     height: 10px;
+//     background: #cccccc;
+// }
+
+// .line4 {
+//     position: relative;
+// }
+// .line4:after {
+//     content: '';
+//     position: absolute;
+//     bottom: 0;
+//     left: 50%;
+//     transform: translateX(-50%);
+//     width: 190px;
+//     height: 1px;
+//     background: #cccccc;
+//     z-index: 10;
+// }
+
+// .line5 {
+//     position: relative;
+// }
+// .line5:after {
+//     content: '';
+//     position: absolute;
+//     bottom: 0;
+//     left: 50%;
+//     transform: translateX(-50%);
+//     width: 78px;
+//     height: 1px;
+//     background: #e2e1e1;
+//     z-index: 10;
+// }
+
+// .line6 {
+//     position: relative;
+// }
+// .line6:after {
+//     content: '';
+//     position: absolute;
+//     bottom: 0px;
+//     left: 50%;
+//     transform: translateX(-50%);
+//     width: 150px;
+//     height: 1px;
+//     background: #e2e1e1;
+//     z-index: 10;
+// }
+
+// .line7 {
+//     position: relative;
+// }
+// .line7:after {
+//     content: '';
+//     position: absolute;
+//     bottom: 0;
+//     left: 50%;
+//     transform: translateX(-50%);
+//     width: 85px;
+//     height: 1px;
+//     background: #e2e1e1;
+//     z-index: 10;
+// }
+// .line8 {
+//     position: relative;
+// }
+// .line8:after {
+//     content: '';
+//     position: absolute;
+//     bottom: 0;
+//     left: 50%;
+//     transform: translateX(-50%);
+//     width: 90px;
+//     height: 1px;
+//     background: #e2e1e1;
+//     z-index: 10;
+// }
+// .line9 {
+//     position: relative;
+// }
+// .line9:after {
+//     content: '';
+//     position: absolute;
+//     bottom: 0;
+//     left: 50%;
+//     transform: translateX(-50%);
+//     width: 205px;
+//     height: 1px;
+//     background: #cccccc;
+//     z-index: 10;
+// }
+
+// // scroll
+// .scroll::-webkit-scrollbar {
+//     width: 5px;
+//     background: none;
+// }
+// .scroll::-webkit-scrollbar-thumb {
+//     background: #c5c5c5;
+//     border-radius: 6px;
+//     height: 40px;
+// }
+// .scroll::-webkit-scrollbar-track {
+//     background: none;
+// }
+
+// // ...처리 클래스
+// .overtext {
+//     white-space: nowrap;
+//     text-overflow: ellipsis;
+//     overflow: hidden;
+// }
+
+// // input type="number" 화살표 없애기 css
+// input[type='number']::-webkit-outer-spin-button,
+// input[type='number']::-webkit-inner-spin-button {
+//     -webkit-appearance: none;
+//     margin: 0;
+// }
+
+// .mt0 {
+//     margin-top: 0 !important;
+// }
