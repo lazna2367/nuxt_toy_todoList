@@ -9,15 +9,16 @@
           </a-button>
       </div>
     </transition> -->
-        <div class="text-box-area">
+      <div class="text-box-area">
+            <span class="text-value">{{autoText}}</span>
+            <!-- <span></span> -->
           <transition name="modal">
-            <span class="text-value" v-if="value">안녕하세요</span>
-          </transition>
-          <div>
-              <a-button type="primary" @click="value = !value"> 
-                Primary
+          <div v-if="isButtonOpen">
+              <a-button type="primary" @click="nextEvent"> 
+                다음
               </a-button>
           </div>
+          </transition>
       </div>
       
 
@@ -50,24 +51,81 @@
 export default {
   data(){
     return {
-      value : false
+      isMainStatus: 0,
+      autoText: '',
+      startValue: '안녕하세요.',
+      isButtonOpen : false
     }
   },
   components: {
     
-  }
+  },
+  mounted() {
+    setTimeout(_ => {
+      this.autoTexts()        
+    },1000)    
+    
+  },
+  methods: {
+    nextEvent(){
+      if(this.isMainStatus === 0 ){
+        this.isMainStatus = 1;
+        this.isButtonOpen = false;
+      }
+      if(this.autoText.length > 0){        
+        setTimeout(_ => {
+          this.autoText = this.autoText.slice(0, -1)
+          this.nextEvent()
+        },100)
+      }else {
+        return false;
+      }
+    },
+    removeTexts(){
+      
+    },
+    autoTexts(){
+      if(this.autoText.length < 6){
+        setTimeout(_ => {
+          this.autoText += this.startValue[this.autoText.length]
+          this.autoTexts()
+        },100)
+      }else {
+        setTimeout(_ => {
+          this.isButtonOpen = true;  
+        },500)        
+        return false
+      }
+    }
+  },
+  
 }
 </script>
 
 <style lang="scss">
 .text-box-area{
   // transition: opacity 0.3s ease;
-  transition: all 0.3s ease;
+  // transition: all 0.3s ease;
+  position: fixed;
+  left: 44%;
+  top: 40%;
   >.text-value{
     color: white;
     font-size: 60px;        
     font-weight: bold;
     font-family: monospace;
+  }
+  >div{
+    position: fixed;
+    left: 46%;
+    top: 50%;
+    >button{
+      width: 250px;
+      height: 50px;
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 20px;
+    }
   }
 }
 .home-container{
