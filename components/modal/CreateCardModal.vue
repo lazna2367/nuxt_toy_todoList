@@ -49,10 +49,17 @@ export default {
         transform: translate(-50%, -50%);
         border-radius: 29px;
         >.flex-template-body{
+            // display: flex;
+            // width: 100%;
+            // height: 100%;            
+            // margin:16px;            
             display: flex;
-            width: 100%;
+            align-items: center;
+            flex-direction: column;
+            background: wheat;
+            border-radius: 29px;
+            padding: 16px;
             height: 100%;
-            background: white;
         }
     }
 }
