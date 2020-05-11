@@ -9,12 +9,14 @@
           </a-button>
       </div>
     </transition> -->
-      <div class="text-box-area">
-            <span class="text-value">{{autoText}}</span>
+      <div class="text-box-area">        
+        
+          <div class="text-value">{{autoText}}</div>
+            <!-- <span class="text-value">{{autoText}}</span> -->
             <!-- <span></span> -->
           <transition name="modal">
-          <div v-if="isButtonOpen">
-              <a-button type="primary" @click="nextEvent"> 
+          <div class="text-value-btn" v-if="isButtonOpen">
+              <a-button type="primary" @click="nextEvent" > 
                 다음
               </a-button>
           </div>
@@ -35,7 +37,7 @@
     </div>
     <!-- 생성 삭제 버튼 -->
     <div class="plus-minus-btn-area">
-      <a-icon type="plus-circle" class="plus-btn" theme="twoTone" two-tone-color="#004eff"/>
+      <a-icon type="plus-circle" class="plus-btn" theme="twoTone" two-tone-color="#004eff" @click="isCreateModal = true"/>
       <a-icon type="minus-circle" class="minuss-btn" theme="twoTone" two-tone-color="#ff4242"/>
     </div>
     <!-- topMoveBtn -->
@@ -43,22 +45,34 @@
       <a-icon type="up-square" class="up-btn" theme="twoTone" two-tone-color="#848484"/>
       <!-- theme="twoTone" two-tone-color="#848484" -->
     </div>
+    <transition name="modal">
+    <create-card-modal v-if="isCreateModal" @close="isCreateModal = false"/>
+    </transition>
   </div>
 </template>
 
 <script>
+import CreateCardModal from '@/components/modal/CreateCardModal'
 
 export default {
   data(){
     return {
+      isCreateModal: false,
       isMainStatus: 0,
       autoText: '',
       startValue: '안녕하세요.',
-      isButtonOpen : false
+      statusValueDatas:[
+        '안녕하세요!',        
+        '혹시 하려 했던 걸 잊어버린 적 한 번쯤 있으시지 않나요?',
+        '도움을 드릴께요!'
+      ],
+      // '혹시 하려고 했던 걸 까먹는 일이 있지 않으신가요?',
+      isButtonOpen : false,
     }
-  },
-  components: {
+  },  
     
+  components: {
+    CreateCardModal
   },
   mounted() {
     setTimeout(_ => {
@@ -68,33 +82,66 @@ export default {
   },
   methods: {
     nextEvent(){
-      if(this.isMainStatus === 0 ){
+      if(this.isMainStatus === 0){
         this.isMainStatus = 1;
         this.isButtonOpen = false;
+      }else if(this.isMainStatus === 1){
+        this.isMainStatus = 2;
+        this.isButtonOpen = false;
+      }else if(this.isMainStatus === 2){
+        this.isCreateModal = true;
       }
+      this.removeTexts();
+      
+    },
+    removeTexts(){
       if(this.autoText.length > 0){        
         setTimeout(_ => {
           this.autoText = this.autoText.slice(0, -1)
-          this.nextEvent()
-        },100)
+          this.removeTexts()
+        },50)
       }else {
+        setTimeout(_ => {
+          this.autoTexts();          
+        },500)
         return false;
       }
     },
-    removeTexts(){
-      
-    },
     autoTexts(){
-      if(this.autoText.length < 6){
-        setTimeout(_ => {
-          this.autoText += this.startValue[this.autoText.length]
-          this.autoTexts()
-        },100)
-      }else {
-        setTimeout(_ => {
-          this.isButtonOpen = true;  
-        },500)        
-        return false
+      if(this.isMainStatus === 0){
+        if(this.autoText.length < this.statusValueDatas[this.isMainStatus].length){
+          setTimeout(_ => {
+            this.autoText += this.statusValueDatas[this.isMainStatus][this.autoText.length]
+            this.autoTexts()
+          },100)
+        }else {
+          setTimeout(_ => {
+            this.isButtonOpen = true;  
+          },300)        
+          return false
+        }        
+      }else if(this.isMainStatus === 1){
+        if(this.autoText.length < this.statusValueDatas[this.isMainStatus].length){
+          setTimeout(_ => {
+            this.autoText += this.statusValueDatas[this.isMainStatus][this.autoText.length]
+            this.autoTexts()
+          },50)
+        }else {
+          setTimeout(_ => {
+            this.isButtonOpen = true;  
+          },500)
+        }
+      }else if(this.isMainStatus === 2){
+        if(this.autoText.length < this.statusValueDatas[this.isMainStatus].length){
+          setTimeout(_ => {
+            this.autoText += this.statusValueDatas[this.isMainStatus][this.autoText.length]
+            this.autoTexts()
+          },100)
+        }else {
+          setTimeout(_ => {
+            this.isButtonOpen = true;  
+          },500)
+        }
       }
     }
   },
@@ -104,38 +151,50 @@ export default {
 
 <style lang="scss">
 .text-box-area{
-  // transition: opacity 0.3s ease;
-  // transition: all 0.3s ease;
-  position: fixed;
-  left: 44%;
-  top: 40%;
+  // position: absolute;
+  position: relative;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   >.text-value{
+    // margin: 0 auto;
     color: white;
-    font-size: 60px;        
+    font-size: 50px;        
     font-weight: bold;
     font-family: monospace;
+    position: absolute;
+    left: 50%;
+    width: 800px;
+    /* top: 77%; */
+    transform: translate(-50%, -110%);
   }
-  >div{
-    position: fixed;
-    left: 46%;
-    top: 50%;
+  >.text-value-btn{
+    // position: fixed;
+    // left: 46%;
+    // top: 50%;
+    position: absolute;
+    left: 50%;
+    /* top: 77%; */
+    transform: translateX(-50%);
     >button{
+      background: #6073ff;
+      border: 0;
       width: 250px;
       height: 50px;
       font-size: 20px;
       font-weight: bold;
-      margin-top: 20px;
+      // margin-top: 20px;
     }
   }
 }
 .home-container{
   width: 90%;
-  height: 100vh;
-  // height: 100%;
-  // background: white;
+  height: calc(100vh - 64px);
   background: rgba(0,0,0,0.7);
   margin: 0 auto;
   margin-top: 64px;
+  position: relative;
 }
 .plus-minus-btn-area{
   position: fixed;
