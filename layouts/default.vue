@@ -9,7 +9,7 @@
       </div>
       <div class="top-nav-category clearfix">
           <a href="#" :class="$route.path === '/' ? 'on' : ''" @click.prevent="$router.push('/')"><p>Home</p></a>
-          <a href="#" :class="$route.path === '/todo' ? 'on' : ''" @click.prevent="$router.push('/todo')"><p>Toto</p></a>
+          <a href="#" :class="$route.path === '/todo' ? 'on' : ''" @click.prevent="$router.push('/todo')"><p>Todo</p></a>
           <a href="#" :class="$route.path === '/profile' ? 'on' : ''" @click.prevent="$router.push('/')"><p>Profile</p></a>
       </div>
       <!-- <a-menu 

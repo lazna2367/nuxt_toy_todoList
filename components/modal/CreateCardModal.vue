@@ -3,11 +3,11 @@
         <div class="card-modal-template">
             <div class="flex-template-body">
                 <div>                    
-                    
+                    <a-icon type="close" @click="close()"/>
                 </div>
                 <div></div>
             </div>
-            <a-icon type="close" @click="close()"/>
+            
         </div>
     </div>      
 </template>

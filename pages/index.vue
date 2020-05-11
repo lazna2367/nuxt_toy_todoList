@@ -64,7 +64,7 @@ export default {
       statusValueDatas:[
         '안녕하세요!',        
         '혹시 하려 했던 걸 잊어버린 적 한 번쯤 있으시지 않나요?',
-        '도움을 드릴께요!'
+        'Todo-List 한번 작성해보세요!'
       ],
       // '혹시 하려고 했던 걸 까먹는 일이 있지 않으신가요?',
       isButtonOpen : false,
@@ -90,6 +90,7 @@ export default {
         this.isButtonOpen = false;
       }else if(this.isMainStatus === 2){
         this.isCreateModal = true;
+        return false;
       }
       this.removeTexts();
       
@@ -150,6 +151,7 @@ export default {
 </script>
 
 <style lang="scss">
+// background: rgb(34, 55, 220);
 .text-box-area{
   // position: absolute;
   position: relative;
@@ -162,7 +164,7 @@ export default {
     color: white;
     font-size: 50px;        
     font-weight: bold;
-    font-family: monospace;
+    // font-family: monospace;
     position: absolute;
     left: 50%;
     width: 800px;
@@ -189,7 +191,7 @@ export default {
   }
 }
 .home-container{
-  width: 90%;
+  width: 100%;
   height: calc(100vh - 64px);
   background: rgba(0,0,0,0.7);
   margin: 0 auto;
