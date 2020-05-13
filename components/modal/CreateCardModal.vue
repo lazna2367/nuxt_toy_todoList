@@ -11,6 +11,9 @@
                     <div class="top-tab-area">
                         <a-icon class="round-close-btn" type="close-circle" @click="close()"/>
                     </div>
+                    <div class="middle-area">
+                        
+                    </div>
                     <!-- <a-icon type="close" @click="close()"/> -->
                 </div>
                 <div class="left-bot-layout">
@@ -27,7 +30,10 @@
                     </div>
                 </div>
                 <div class="right-bot-layout">
-                    </div>                
+                    <div class="bot-area">
+                        
+                    </div>
+                </div>                
             </div>
             
         </div>
@@ -97,6 +103,8 @@ export default {
                 }
             }.right-top-layout{
                 display: flex;
+                flex-direction: column;
+                justify-content: space-around;
                 flex-basis: 60%;
                 flex-grow: 1;
                 height: 70%;
@@ -108,10 +116,16 @@ export default {
                     height: 15%;
                     border: 1px solid gray;
                     >.round-close-btn{
+
                         font-size: 30px;
                         margin-left: auto;
                     }  
                 }      
+                >.middle-area{
+                    border: 1px solid gray;
+                    width: 100%;
+                    height: 80%;
+                }
             }
             >.left-bot-layout{
                 display: flex;
@@ -145,7 +159,11 @@ export default {
             >.right-bot-layout{
                 flex-basis: 60%;
                 height: 30%;
-                
+                >.bot-area{
+                    width: 100%;
+                    height: 100%;
+                    border: 1px solid gray;
+                }
             }
         }
     }
