@@ -9,7 +9,14 @@
                 </div>    
                 <div class="right-top-layout">
                     <div class="top-tab-area">
-                        <a-icon class="round-close-btn" type="close-circle" @click="close()"/>
+                        <div class="nav">
+                            <div class="on">Menu1</div>
+                            <div>Menu2</div>
+                            <div>Menu3</div>
+                        </div>
+                        <div class="close">
+                            <a-icon class="round-close-btn" type="close-circle" @click="close()"/>
+                        </div>
                     </div>
                     <div class="middle-area">
                         
@@ -70,23 +77,24 @@ export default {
     >.card-modal-template{
         position: relative;
         background: white;
-        width: 80%;
+        width: 80%;                     
+
         height: 80%;
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        border-radius: 29px;
+        border-radius: 32px;
         >.flex-template-body{       
             display: flex;
             flex-wrap: wrap;
             align-content: flex-start;
-            border-radius: 29px;
+            border-radius: 32px;
             padding: 32px;
             padding-top: 16px;
             height: 100%;
             >div{
                 height: 10px;
-                border: 1px solid gray;
+                // border: 1px solid gray;
                 padding: 16px;
             }
             >.left-top-layout{
@@ -97,6 +105,7 @@ export default {
                 height: 70%;
                 padding-bottom: 0;
                 >.img-box{
+                    border-radius: 32px;
                     border: 1px solid gray;
                     width: 80%;
                     height: 100%;
@@ -114,12 +123,30 @@ export default {
                     align-items: flex-start;
                     width: 100%;
                     height: 15%;
-                    border: 1px solid gray;
-                    >.round-close-btn{
-
-                        font-size: 30px;
-                        margin-left: auto;
-                    }  
+                    // border: 1px solid gray;
+                    >.nav{
+                        display: flex;
+                        align-items: center;
+                        height: 100%;
+                        div{
+                            margin-left: 20px;
+                            font-size: 20px;
+                            color: #9e9e9e;                            
+                        }
+                        div:nth-child(1){
+                            margin-left: 0px;
+                        }
+                        >.on{
+                            color: #6073ff;
+                            border-bottom: 3px solid #6073ff;
+                        }
+                    }
+                    >.close{
+                        >.round-close-btn{
+                            font-size: 30px;
+                            margin-left: auto;
+                        }  
+                    }                    
                 }      
                 >.middle-area{
                     border: 1px solid gray;
@@ -136,7 +163,7 @@ export default {
                     display: flex;
                     flex-direction: column;
                     justify-content: space-between;
-                    border: 1px solid gray;
+                    // border: 1px solid gray;
                     width: 80%;
                     height: 100%;
                     >.search-modal-btn{
