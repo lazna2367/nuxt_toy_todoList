@@ -1,7 +1,15 @@
 <template>
     <div class="template">
         <div class="card-modal-template">
-            <div class="flex-template-body">
+            <div class="flex-modal-box">
+                <div class="left-body-template">
+
+                </div>
+                <div class="right-body-template">
+
+                </div>
+            </div>
+            <!-- <div class="flex-template-body">
                 <div class="left-top-layout">
                     <div class="img-box">
 
@@ -9,19 +17,26 @@
                 </div>    
                 <div class="right-top-layout">
                     <div class="top-tab-area">
-                        <div class="nav">
+                        <nav class="nav">
                             <div class="on">Menu1</div>
                             <div>Menu2</div>
                             <div>Menu3</div>
-                        </div>
+                        </nav>
                         <div class="close">
                             <a-icon class="round-close-btn" type="close-circle" @click="close()"/>
                         </div>
                     </div>
                     <div class="middle-area">
-                        
+                        <div>
+                            <span>제목을 입력해주세요.</span>
+                            <div>
+                                <input type="text" />
+                            </div>
+                        </div>
+                        <div>
+
+                        </div>
                     </div>
-                    <!-- <a-icon type="close" @click="close()"/> -->
                 </div>
                 <div class="left-bot-layout">
                     <div>
@@ -41,7 +56,7 @@
                         
                     </div>
                 </div>                
-            </div>
+            </div> -->
             
         </div>
     </div>      
@@ -64,8 +79,7 @@ export default {
 }
 </script>
 <style lang="scss">
-.template{
-    
+.template{    
     background-color: rgba(0, 0, 0, 0.5);
     width: 100%;
     height: 100%;
@@ -73,7 +87,7 @@ export default {
     top: 0;
     position: fixed;    
     // transition: opacity 0.3s ease;
-    z-index: 10;
+    z-index: 10;    
     >.card-modal-template{
         position: relative;
         background: white;
@@ -84,6 +98,34 @@ export default {
         top: 50%;
         transform: translate(-50%, -50%);
         border-radius: 32px;
+        padding: 16px;        
+        >.flex-modal-box{                       
+            // background: wheat;
+            display: flex;            
+            flex-direction: row;
+
+            width: 100%;
+            height: 100%;
+            // border: 1px solid black;
+            border-radius: 20px;
+            >.left-body-template{
+                border-radius: 20px 0px 0px 20px;
+                background: wheat;
+                width: 100%;
+                height: 100%;
+                border: 1px solid blue;
+            }
+            >.right-body-template{
+                    border-radius: 0px 20px 20px 0px;
+                background: wheat;
+                width: 100%;
+                height: 100%;
+                border: 1px solid blue;
+            }
+        }
+
+    //=====================
+
         >.flex-template-body{       
             display: flex;
             flex-wrap: wrap;
