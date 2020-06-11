@@ -2,12 +2,14 @@
     <div class="template">
         <div class="card-modal-template">
             <div class="flex-modal-box">
+                <!-- 
                 <div class="left-body-template">
 
                 </div>
                 <div class="right-body-template">
 
-                </div>
+                </div> 
+                -->
             </div>
             <!-- <div class="flex-template-body">
                 <div class="left-top-layout">
@@ -110,17 +112,18 @@ export default {
             border-radius: 20px;
             >.left-body-template{
                 border-radius: 20px 0px 0px 20px;
-                background: wheat;
+                // background: wheat;
+                background-color: rgba(0, 0, 0, 0.2);
                 width: 100%;
                 height: 100%;
-                border: 1px solid blue;
+                // border: 1px solid blue;
             }
             >.right-body-template{
                     border-radius: 0px 20px 20px 0px;
                 background: wheat;
                 width: 100%;
                 height: 100%;
-                border: 1px solid blue;
+                // border: 1px solid blue;
             }
         }
 

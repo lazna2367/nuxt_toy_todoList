@@ -9,11 +9,8 @@
           </a-button>
       </div>
     </transition> -->
-      <div class="text-box-area">        
-        
+      <!-- <div class="text-box-area">                
           <div class="text-value">{{autoText}}</div>
-            <!-- <span class="text-value">{{autoText}}</span> -->
-            <!-- <span></span> -->
           <transition name="modal">
           <div class="text-value-btn" v-if="isButtonOpen">
               <a-button type="primary" @click="nextEvent" > 
@@ -21,8 +18,7 @@
               </a-button>
           </div>
           </transition>
-      </div>
-      
+      </div> -->    
 
     <!-- 카테고리탭 -->    
     <div>      
@@ -36,15 +32,14 @@
 
     </div>
     <!-- 생성 삭제 버튼 -->
-    <div class="plus-minus-btn-area">
+    <!-- <div class="plus-minus-btn-area">
       <a-icon type="plus-circle" class="plus-btn" theme="twoTone" two-tone-color="#004eff" @click="isCreateModal = true"/>
       <a-icon type="minus-circle" class="minuss-btn" theme="twoTone" two-tone-color="#ff4242"/>
-    </div>
+    </div> -->
     <!-- topMoveBtn -->
-    <div class="up-btn-area">
-      <a-icon type="up-square" class="up-btn" theme="twoTone" two-tone-color="#848484"/>
-      <!-- theme="twoTone" two-tone-color="#848484" -->
-    </div>
+    <!-- <div class="up-btn-area">
+      <a-icon type="up-square" class="up-btn" theme="twoTone" two-tone-color="#848484"/>      
+    </div> -->
     <transition name="modal">
     <create-card-modal v-if="isCreateModal" @close="isCreateModal = false"/>
     </transition>
@@ -191,11 +186,12 @@ export default {
   }
 }
 .home-container{
-  width: 100%;
+  width: 85%;
   height: calc(100vh - 64px);
+  // height: 100vh;
   background: rgba(0,0,0,0.7);
   margin: 0 auto;
-  margin-top: 64px;
+  // margin-top: 64px;
   position: relative;
 }
 .plus-minus-btn-area{
