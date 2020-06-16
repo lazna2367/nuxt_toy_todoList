@@ -26,62 +26,63 @@
         <!-- :class="$route.path === '/profile' ? 'ant-menu-item-selected' : ''" -->
     </a-layout-header>
     <a-layout-content class="body-contents">
-      <div class="side-nav">        
+      <div class="side-nav">
+        <div class="category-contents all" 
+          :class="pickCategory === 0 ? 'on' : ''"
+          @click="pickCategory = 0 " >
+          <div class="category-title">
+            <span>All</span>
+          </div>
+          <div class="category-mod">
+            <a-icon type="unordered-list" />
+          </div>
+        </div>
         <div v-for="(v,i) in categoryData" :key="i" 
           class="category-contents"
-          :class="categoryClass(v)"
+          :class="categoryClass(v,i)"
         >
-            <div class="category-title" @click="categoryData[i].OnOff = !categoryData[i].OnOff">
+            <div class="category-title" @click="pickCategory = i+1">
               <span>{{v.title}}</span>
             </div>
             <div class="category-mod">
-              <a-icon type="dash" />
+              <a-icon type="dash"/>
             </div>
         </div>
-        <!-- <div  class="category-contents yellow">
-            <div class="category-title">
-              <span>내용 1</span>
-            </div>
-            <div class="category-mod">
-              <a-icon type="dash" />
-            </div>
-        </div>
-        <div class="category-contents red">
-            <div class="category-title">
-              <span>내용 2</span>
-            </div>
-            <div class="category-mod">
-              <a-icon type="dash" />
-            </div>
-        </div>
-        <div class="category-contents blue">
-            <div class="category-title">
-              <span>내용 3</span>
-            </div>
-            <div class="category-mod">
-              <a-icon type="dash" />
-            </div>
-        </div>
-        <div class="category-contents green">
-            <div class="category-title">
-              <span>내용 4</span>
-            </div>
-            <div class="category-mod">
-              <a-icon type="dash" />
-            </div>
-        </div>
-        <div class="category-contents purple">
-            <div class="category-title">
-              <span>내용 5</span>
-            </div>
-            <div class="category-mod">
-              <a-icon type="dash" />
-            </div>
-        </div> -->
 
-
-        <div class="category-plus">
-            <a-icon type="plus-square" class="category-plus-icon"/>
+        <div class="category-plus" 
+            :class="categoryPlusStatus === 1 ? 'color-pick' 
+            :categoryPlusStatus === 2 ? 'category-title'
+            : ''">
+            <!-- 카테고리 추가 -->
+            <a-icon type="plus-square" class="category-plus-icon" v-if="categoryPlusStatus === 0" @click="categoryPlusStatus = 1"/>
+            <!-- 컬러선택 -->
+            <div class="colors" v-if="categoryPlusStatus === 1">
+              <div class="colors-list" >
+                  <div class="yellow" @click="(categoryPlusStatus = 2 , categoryCreateData.color = 'yellow')" ></div>
+                  <div class="red" @click="(categoryPlusStatus = 2 , categoryCreateData.color = 'red')"></div>
+                  <div class="blue" @click="(categoryPlusStatus = 2 , categoryCreateData.color = 'blue')"></div>
+                  <div class="green" @click="(categoryPlusStatus = 2 , categoryCreateData.color = 'green')"></div>
+                  <div class="purple" @click="(categoryPlusStatus = 2 , categoryCreateData.color = 'purple')"></div>
+              </div>
+              <div class="close" >
+                  <a-icon type="close" @click="categoryPlusStatus = 0"/>
+              </div>
+            </div>
+            <!-- 타이틀 작성 -->
+            <div class="title-input" v-if="categoryPlusStatus === 2">
+                <div class="title">
+                    <!-- <a-input placeholder="타이틀명" />
+                    <a-icon type="form" /> -->
+                    <a-input-search placeholder="카테고리명" size="large" @search="submitCategory" v-model="categoryCreateData.title">
+                    <a-button slot="enterButton" type="primary">
+                      저장
+                    </a-button>
+                  </a-input-search>
+                </div>
+                <div class="close" >
+                  <a-icon type="close" @click="categoryPlusStatus = 0"/>
+              </div>
+            </div>            
         </div>
       </div>
       <nuxt />
@@ -94,43 +95,41 @@ import { mapState , mapMutations } from 'vuex';
 export default {
   data() {
     return {
-      categoryData:[
-        {
-          color : 'yellow',
-          title : '내용 1',
-          OnOff: false,
-        },
-        {
-          color : 'red',
-          title : '내용 2',
-          OnOff: false,
-        },
-        {
-          color : 'blue',
-          title : '내용 3',
-          OnOff: false,
-        },
-        {
-          color : 'green',
-          title : '내용 4',
-          OnOff: false,
-        },
-        {
-          color : 'purple',
-          title : '내용 5',
-          OnOff: false,
-        },
-      ]
+      pickCategory: 0,
+      categoryCreateData:{
+        color: '',
+        title: ''
+      },
+      categoryPlusStatus: 0,
+      categoryData:[]
     }
   },    
   computed: {
     ...mapState(['fullPath']),    
   },
+  watch:{
+    categoryPlusStatus(){
+      if(this.categoryPlusStatus === 0){
+        this.categoryCreateData = {
+          color: '',
+          title: ''
+        }
+      }
+    },
+  },
   methods: {
     ...mapMutations(['setFullPath']),
-    categoryClass(val){
+    submitCategory(){
+      this.categoryData.push({
+          color : this.categoryCreateData.color,
+          title : this.categoryCreateData.title,
+          todoData:[],
+      })
+      this.categoryPlusStatus = 0        
+    },
+    categoryClass(val,idx){
       let result = val.color;
-      if(val.OnOff){
+      if(this.pickCategory === idx+1){
         result += ' on'
       }
       return result
@@ -141,9 +140,10 @@ export default {
 <style lang="scss">
 .container-header{
   // background: white !important; 
-  // box-shadow: 0px 0px 5px 1px gray;
-  background: none !important;
-  box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.3);
+  // box-shadow: 0px 0px 5px 1px gray;  
+  background: white !important;
+  // box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.3);
+  box-shadow: 3px 0 15px 6px rgba(0, 0, 0, 0.16);
   position: fixed;
   top: 0;
   left: 0;
@@ -186,13 +186,15 @@ export default {
   min-height: 1000px;
   >.side-nav{
     width: 15%;
-    height: 100%;    
-    border: 5px solid white;
+    height: calc(100vh - 64px);   
+    // border: 5px solid white;
     overflow: auto;  
     -ms-overflow-style: none;
     &::-webkit-scrollbar {
         display:none;
     }
+    -webkit-box-shadow: rgba(0,0,0,.16) 3px 0 15px;
+    box-shadow: 3px 0 15px rgba(0,0,0,.16);
 
     >div{
       width: 100%;
@@ -218,8 +220,30 @@ export default {
         >i{
             color: black;
         }
-      }      
+      }
       margin-bottom: 5px;
+    }
+    >.category-contents.all{
+      border: 1px solid #5d5d5d;
+        // border: 1px solid #ffa40d;
+        >.category-title{
+          background: #d8d8d8;
+        }
+        >.category-mod{
+          // background: #fff2ab;
+          background: #a0a0a0;
+        }
+    }
+    .category-contents.all.on{
+        >.category-title{
+          background: #5d5d5d;
+          >span{
+            color: white;
+          }
+        }
+        >.category-mod{
+          background: white;
+        }
     }
     >.category-contents.yellow{
         border: 1px solid #ffbf54;
@@ -334,6 +358,150 @@ export default {
       >.category-plus-icon{
         font-size: 32px;
         cursor: pointer;
+      }
+    }
+    >.category-plus.color-pick{
+      >.colors{
+        display: flex;
+        width: 100%;
+        height: 100%;
+        >.colors-list{          
+          height: 100%;
+          width: 85%;          
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          >div{
+            width: 30px;
+            height: 30px;
+            border-radius: 20px;            
+            display: flex;            
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+          }
+          >.yellow{
+            border: 2px solid #ffbf54;
+          }          
+          >.yellow:hover{
+            border: 0px;
+          }
+          >.yellow::after{
+            content: '';
+            width: 85%;
+            height: 85%;
+            background: #ffed89;
+            border-radius: 20px;
+            border: 2px solid #ffbf54;
+          }
+          .yellow::after:hover{
+            background: #ffbf54;
+          }          
+          >.red{
+            border: 2px solid #ff5954;
+          }
+          >.red:hover{
+            border: 0px;
+          }
+          >.red::after{
+            content: '';
+            width: 85%;
+            height: 85%;
+            background: #ffb7ab;
+            border-radius: 20px;
+            border: 2px solid #ff5954;
+          }
+          >.blue{
+            border: 2px solid #548cff;
+          }
+          >.blue:hover{
+            border: 0px;
+          }
+          >.blue::after{
+            content: '';
+            width: 85%;
+            height: 85%;
+            background: #abb9ff;
+            border-radius: 20px;
+            border: 2px solid #548cff;
+          }
+          >.green{
+            border: 2px solid #3bc73c;
+          }
+          >.green:hover{
+            border: 0px;
+          }
+          >.green::after{
+            content: '';
+            width: 85%;
+            height: 85%;
+            background: #8aff99;
+            border-radius: 20px;
+            border: 2px solid #3bc73c;
+          }
+          >.purple{
+            border: 2px solid #ba54ff;
+          }
+          >.purple:hover{
+            border: 0px;
+          }
+          >.purple::after{
+            content: '';
+            width: 85%;
+            height: 85%;
+            background: #dbabff;
+            border-radius: 20px;
+            border: 2px solid #ba54ff;
+          }
+          
+        }
+        >.close{                    
+          height: 100%;
+          width: 15%;
+          display: flex;
+          justify-content: center;
+          align-items: center;          
+          >.anticon-close{
+            cursor: pointer;
+            font-size: 20px;
+          }
+        }
+      }      
+    }
+    >.category-title{      
+      >.title-input{
+        display: flex;
+        width: 100%;
+        height: 100%;
+        >.title{
+          height: 100%;
+          width: 85%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          .ant-input-search{
+            width: 85%;
+            .ant-input{
+              font-size: 12px;
+              height: 30px;
+            }
+            .ant-btn{
+              height: 30px;
+              font-size: 12px;
+            }
+          }
+        }
+        >.close{                    
+          height: 100%;
+          width: 15%;
+          display: flex;
+          justify-content: center;
+          align-items: center;          
+          >.anticon-close{
+            cursor: pointer;
+            font-size: 20px;
+          }
+        }
       }
     }
   }
