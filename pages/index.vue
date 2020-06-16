@@ -103,11 +103,27 @@ export default {
       >.todo-top{
         width: 100%;
         height: 15%;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        >.zoom-in-btn{
+            flex: auto;
+            font-size: 25px;            
+            margin-left: 15px;
+        }
+        >.write-list{
+            font-size: 25px;
+            width: 140px;
+        }
+        >.wrtie-btn{
+            font-size: 25px;
+            margin-right: 15px;
+        }
       }
       >.todo-body{
         width: 100%;
         height: 85%;
-      }
+      }      
     }
     
     >.todo-card.yellow{
