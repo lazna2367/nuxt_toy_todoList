@@ -36,18 +36,19 @@
           <div class="category-mod">
             <a-icon type="unordered-list" />
           </div>
-        </div>
+        </div>        
+        <!-- 카테고리 데이터 -->
         <div v-for="(v,i) in categoryData" :key="i" 
           class="category-contents"
           :class="categoryClass(v,i)"
-        >
-            <div class="category-title" @click="pickCategory = i+1">
+        >          
+           <div class="category-title" @click="pickCategory = i+1">
               <span>{{v.title}}</span>
             </div>
             <div class="category-mod">
               <a-icon type="dash"/>
             </div>
-        </div>
+        </div>        
 
         <div class="category-plus" 
             :class="categoryPlusStatus === 1 ? 'color-pick' 
@@ -138,6 +139,15 @@ export default {
 }
 </script>
 <style lang="scss">
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
 .container-header{
   // background: white !important; 
   // box-shadow: 0px 0px 5px 1px gray;  

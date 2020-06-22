@@ -1,7 +1,8 @@
 <template>
   <div class="home-container">
     <div class="todo-card-list">
-        <div class="todo-card yellow" v-for="i in 1" :key="i">
+      <!-- <transition-group name="modal" tag="div" class="todo-card-list"> -->
+        <div class="todo-card yellow" v-for="i in list" :key="i">                      
           <div class="todo-top">                          
                 <!-- 줌인 -->
                 <!-- <a-icon type="fullscreen" /> -->
@@ -10,29 +11,42 @@
                 <!-- 사진 -->
                 <!-- <a-icon type="picture" /> -->
                 <!-- 날짜 -->
-                <!-- computer-icons-map-symbol-map-icon.jpg -->
+                <!-- computer-icons-agenda-diary-calendar-date-others.jpg -->
                 <!-- 지도 -->
                 <!-- computer-icons-map-symbol-map-icon.jpg -->
 
                 <!-- 수정 아이콘 -->
                 <!-- <a-icon type="form" /> -->
-                <div class="zoom-in-btn">
+                <!-- <div class="zoom-in-btn">
                     <a-icon type="fullscreen" />
-                </div>
+                </div> -->
                 <div class="write-list">
-                    <a-icon type="edit" />
+                  <div class="arrow">
+                    <a-icon type="caret-left" v-if="!isModTodo" @click="isModTodo = !isModTodo"/>
+                    <a-icon type="caret-right" v-if="isModTodo" @click="isModTodo = !isModTodo"/>
+                  </div>
+                  <div class="icons" v-if="isModTodo">
                     <a-icon type="edit" />
                     <a-icon type="picture" />
-                    <a-icon type="picture" />
+                    <div class="date">
+                      <img src="../assets/img/mod-date-icon.png" alt>
+                    </div>
+                    <div class="map">
+                      <img src="../assets/img/mod-map-icon.png" alt>
+                    </div>
+                  </div>
                 </div>
-                <div class="wrtie-btn">
-                    <a-icon type="form" />
+                <div class="wrtie-btn" @click="isModTodo = !isModTodo">
+                    <a-icon type="form" />                    
                 </div>              
           </div>
           <div class="todo-body">
-
+            <textarea name="" id="" cols="30" rows="10" v-model="testValue"></textarea>            
+              <div class="text-value" v-html="value">
+              </div>
           </div>
         </div>
+        <!-- </transition-group> -->
         <!-- <div class="todo-card-void" v-show="htmlWidth < 1800 && htmlWidth > 1384"/> -->
     </div>    
     <div class="side-btn">      
@@ -40,11 +54,11 @@
         <!-- <a-icon type="minus-square" />       -->
         <!-- <a-icon type="plus-square" theme="twoTone" />
         <a-icon type="minus-square" theme="twoTone" two-tone-color="red"/> -->
-        <a-icon type="plus-square" theme="filled" />
-        <a-icon type="minus-square" theme="filled" />
+        <a-icon type="plus-square" theme="filled" @click="list +=1 "/>
+        <a-icon type="minus-square" theme="filled" @click="list === 0 ? '' : list -=1" />
     </div>
     <!-- <transition name="modal">
-    </transition> -->
+    </transition> -->          
   </div>
 </template>
 
@@ -53,7 +67,11 @@
 export default {
   data(){
     return {
+      isModTodo: false,
+      testValue:'',
+      value:'',
       htmlWidth: 0,
+      list: 0,      
     }
   },  
     
@@ -63,6 +81,12 @@ export default {
     window.addEventListener('resize',() => {
       this.htmlWidth = window.innerWidth
     })       
+  },
+  watch: {
+    testValue(){
+      this.value = this.testValue.replace(/\n/g ,'<br>')
+      console.log(this.testValue)
+    }
   },
   methods: {
   },
@@ -100,6 +124,7 @@ export default {
       display: flex;
       flex-flow: column;
       box-shadow: 2px 0px 6px 1px rgba(0, 0, 0, 0.16);
+
       >.todo-top{
         width: 100%;
         height: 15%;
@@ -107,17 +132,58 @@ export default {
         justify-content: flex-end;
         align-items: center;
         >.zoom-in-btn{
+            display: flex;
             flex: auto;
             font-size: 25px;            
             margin-left: 15px;
         }
-        >.write-list{
-            font-size: 25px;
-            width: 140px;
-        }
-        >.wrtie-btn{
-            font-size: 25px;
-            margin-right: 15px;
+        >.write-list{              
+            display: flex;            
+            >.arrow{
+              cursor: pointer;
+              font-size: 20px;
+            }
+            >.icons{
+              font-size: 20px;
+              display: flex;
+              align-items: center;
+              >i{
+                cursor: pointer;
+                width: 32px;
+                color: #4c4c4c;;
+              }
+              >.date{
+                cursor: pointer;
+                display: flex;
+                width: 32px;
+                justify-content: center;
+                align-items: center;
+                padding-left: 4px;
+                padding-top: 2px;
+                >img{
+                  width: 18px;
+                }
+              }
+              >.map{
+                cursor: pointer;
+                display: flex;
+                width: 32px;
+                justify-content: center;
+                align-items: center;
+                padding-right: 3px;
+                >img{
+                  width: 18px;
+                }
+              }
+            }
+        }        
+        >.wrtie-btn{          
+            cursor: pointer;
+            width: 32px;
+            text-align: center;
+            font-size: 20px;
+            border-left: 0;
+            margin-right: 10px;
         }
       }
       >.todo-body{
@@ -130,6 +196,20 @@ export default {
       border: 1px solid #ffbf54;
       >.todo-top{
         background: #ffed89;
+        .arrow{
+          background: #ffed89;
+          border: 1px solid #ffbf54;
+        }
+        .icons{
+          background: #fff7d1;  
+          border: 1px solid #ffbf54;
+          border-left: 0;
+        }
+        .wrtie-btn{
+          background: #ffed89; 
+          border: 1px solid #ffbf54;
+          border-left: 0;
+        }
       }
       >.todo-body{
         background: #fff7d1;
@@ -191,12 +271,37 @@ export default {
   }
   
 }
-.modal-enter, .modal-leave-to {
-    opacity: 0;
+// .modal-enter, .modal-leave-to {
+//     transition: all .4s;
+//     transform: translateY(100px);
+// }
+.modal-enter {
+
+
 }
-.modal-leave-active , .modal-enter-active{
-    // opacity: 0;
-    transition: opacity .5s;
+.modal-enter-active{
+    animation: fade 0.4s ;
+
+}
+.modal-leave-active{
+    transform: translateY(30px);
+    animation: fade 0.4s  reverse;
+
+}
+.modal-fade-enter, .modal-fade-leave-to
+/* .slide-fade-leave-active below version 2.1.8 */ {
+  
+}
+.modal-move {
+  transition: transform 1s;
+}
+@keyframes fade {
+  0% {
+    transform: translateY(30px);
+  }
+  100% {
+    transform: translateY(0);
+  }
 }
 // .modal-enter .modal-container,
 // .modal-leave-active .modal-container {
