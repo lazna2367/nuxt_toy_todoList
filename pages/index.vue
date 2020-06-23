@@ -25,8 +25,11 @@
                     <a-icon type="caret-left" v-if="!isModTodo" @click="isModTodo = !isModTodo"/>
                     <a-icon type="caret-right" v-if="isModTodo" @click="isModTodo = !isModTodo"/>
                   </div>
-                  <div class="icons" v-if="isModTodo">
-                    <a-icon type="edit" />
+                  <div class="icons" v-show="isModTodo">
+                    <!-- <a-icon type="edit" /> -->
+                    <div class="text">
+                      <img src="../assets/img/mod-text-icon.png" alt>
+                    </div>
                     <a-icon type="picture" />
                     <div class="date">
                       <img src="../assets/img/mod-date-icon.png" alt>
@@ -41,19 +44,28 @@
                 </div>              
           </div>
           <div class="todo-body">
-            <textarea name="" id="" cols="30" rows="10" v-model="testValue"></textarea>            
-              <div class="text-value" v-html="value">
+            <div class="text-input" v-if="!isTextForm">
+              <textarea name="" id="" cols="30" rows="10" v-model="testValue"/>
+              <div class="edit-box">
+                    <a-icon type="check-circle" @click="isTextForm = true" />
+                    <a-icon type="close-circle" />
               </div>
+            </div>
+            <!-- word-break: break-all; -->
+            <div class="text-box" v-else-if="isTextForm">
+              <template v-for="(v,i) in value">
+                {{v}}<br :key="i">
+              </template>
+              <div class="mod-icon" @click="isTextForm = false">
+                  <a-icon type="edit"/>
+              </div>
+            </div>
           </div>
         </div>
         <!-- </transition-group> -->
         <!-- <div class="todo-card-void" v-show="htmlWidth < 1800 && htmlWidth > 1384"/> -->
     </div>    
-    <div class="side-btn">      
-        <!-- <a-icon type="plus-square" />             -->
-        <!-- <a-icon type="minus-square" />       -->
-        <!-- <a-icon type="plus-square" theme="twoTone" />
-        <a-icon type="minus-square" theme="twoTone" two-tone-color="red"/> -->
+    <div class="side-btn">
         <a-icon type="plus-square" theme="filled" @click="list +=1 "/>
         <a-icon type="minus-square" theme="filled" @click="list === 0 ? '' : list -=1" />
     </div>
@@ -70,6 +82,7 @@ export default {
       isModTodo: false,
       testValue:'',
       value:'',
+      isTextForm: false,
       htmlWidth: 0,
       list: 0,      
     }
@@ -84,8 +97,8 @@ export default {
   },
   watch: {
     testValue(){
-      this.value = this.testValue.replace(/\n/g ,'<br>')
-      console.log(this.testValue)
+      // this.value = this.testValue.replace(/\n/g ,'<br>')
+      this.value = this.testValue.split('\n');
     }
   },
   methods: {
@@ -152,13 +165,26 @@ export default {
                 width: 32px;
                 color: #4c4c4c;;
               }
-              >.date{
+              >.text{
                 cursor: pointer;
                 display: flex;
                 width: 32px;
                 justify-content: center;
                 align-items: center;
                 padding-left: 4px;
+                padding-top: -3px;
+                padding-bottom: 1px;
+                >img{
+                  width: 24px;
+                }
+              }
+              >.date{
+                cursor: pointer;
+                display: flex;
+                width: 32px;
+                justify-content: center;
+                align-items: center;
+                padding-left: 3px;
                 padding-top: 2px;
                 >img{
                   width: 18px;
@@ -189,6 +215,72 @@ export default {
       >.todo-body{
         width: 100%;
         height: 85%;
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        >.text-input{
+            display: flex;
+            flex-wrap: wrap;
+            >textarea{
+              width: 100%;
+              height: 100px;
+              // border-top: 1px solid #ffbf54;            
+              // border-bottom: 1px solid #ffbf54;
+              // border-right: 0;
+              // border-left: 0;
+              outline: none;
+            }
+            >.edit-box{
+              width: 100%;
+              display: flex;
+              justify-content: flex-end;
+              margin-top: 6px;
+              .anticon-check-circle{
+                cursor: pointer;
+                font-size: 24px;
+                color: #0089ff;
+                margin-right: 10px;
+                background: white;
+                border-radius: 50px;
+              }
+              .anticon-close-circle{
+                cursor: pointer;
+                font-size: 24px;
+                color: red;
+                margin-right: 10px;
+                background: white;
+                border-radius: 50px;
+              }
+            }
+        }
+        
+        >.text-box{
+          word-break: break-all;
+          position: relative;
+          min-height: 42px;
+          >.mod-icon{
+              position: absolute;
+              top: 0;
+              right: 0;
+              background: white;
+              border-radius: 50px;
+              width: 32px;
+              height: 32px;
+              display: none;
+              justify-content: center;
+              align-items: center;
+              border: 2px solid #ffbf54;
+              >i{
+                font-size: 19px;
+              }
+          }
+        }
+        >.text-box:hover{
+          >.mod-icon{
+            cursor: pointer;
+            display: flex;
+          }
+        }
       }      
     }
     
@@ -212,43 +304,139 @@ export default {
         }
       }
       >.todo-body{
-        background: #fff7d1;
+        background: #fff7d1;       
+        .text-input{
+          >textarea{
+            border: 1px solid #ffbf54;
+          }
+        }
+        .mod-icon{
+          border: 2px solid #ffbf54;
+        }
       }
     }
     >.todo-card.red{
       border: 1px solid #ff5954;
       >.todo-top{
         background: #ffb7ab;
+        .arrow{
+          background: #ffb7ab;
+          border: 1px solid #ff5954;
+        }
+        .icons{
+          background: #ffded1;  
+          border: 1px solid #ff5954;
+          border-left: 0;
+        }
+        .wrtie-btn{
+          background: #ffb7ab; 
+          border: 1px solid #ff5954;
+          border-left: 0;
+        }
       }
       >.todo-body{
         background: #ffded1;
+        .text-input{
+          >textarea{
+            border: 1px solid #ff5954;
+          }
+        }
+        .mod-icon{
+          border: 2px solid #ff5954;
+        }
       }
     }
     >.todo-card.blue{
       border: 1px solid #548cff;
       >.todo-top{
         background: #abb9ff;
+        .arrow{
+          background: #abb9ff;
+          border: 1px solid #548cff;
+        }
+        .icons{
+          background: #d1dbff;  
+          border: 1px solid #548cff;
+          border-left: 0;
+        }
+        .wrtie-btn{
+          background: #abb9ff; 
+          border: 1px solid #548cff;
+          border-left: 0;
+        }
       }
       >.todo-body{
         background: #d1dbff;
+        .text-input{
+          >textarea{
+            border: 1px solid #548cff;
+          }
+        }
+        .mod-icon{
+          border: 2px solid #548cff;
+        }
       }
     }
     >.todo-card.green{
       border: 1px solid #3bc73c;
       >.todo-top{
         background: #8aff99;
+        .arrow{
+          background: #8aff99;
+          border: 1px solid #3bc73c;
+        }
+        .icons{
+          background: #d2ffd1;  
+          border: 1px solid #3bc73c;
+          border-left: 0;
+        }
+        .wrtie-btn{
+          background: #8aff99; 
+          border: 1px solid #3bc73c;
+          border-left: 0;
+        }
       }
       >.todo-body{
         background: #d2ffd1;
+        .text-input{
+          >textarea{
+            border: 1px solid #3bc73c;
+          }
+        }
+        .mod-icon{
+          border: 2px solid #3bc73c;
+        }
       }
     }
     >.todo-card.purple{
       border: 1px solid #ba54ff;
       >.todo-top{
         background: #dbabff;
+        .arrow{
+          background: #dbabff;
+          border: 1px solid #ba54ff;
+        }
+        .icons{
+          background: #e9d1ff;  
+          border: 1px solid #ba54ff;
+          border-left: 0;
+        }
+        .wrtie-btn{
+          background: #dbabff; 
+          border: 1px solid #ba54ff;
+          border-left: 0;
+        }
       }
       >.todo-body{
         background: #e9d1ff;
+        .text-input{
+          >textarea{
+            border: 1px solid #ba54ff;
+          }
+        }
+        .mod-icon{
+          border: 2px solid #ba54ff;
+        }
       }
     }
   }
