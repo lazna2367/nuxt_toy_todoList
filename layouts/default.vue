@@ -27,7 +27,7 @@
     </a-layout-header>
     <a-layout-content class="body-contents">
       <div class="side-nav">
-        <div class="category-contents all" 
+        <!-- <div class="category-contents all" 
           :class="pickCategory === 0 ? 'on' : ''"
           @click="pickCategory = 0 " >
           <div class="category-title">
@@ -36,9 +36,10 @@
           <div class="category-mod">
             <a-icon type="unordered-list" />
           </div>
-        </div>        
+        </div>-->
+
         <!-- 카테고리 데이터 -->
-        <div v-for="(v,i) in categoryData" :key="i" 
+        <!-- <div v-for="(v,i) in categoryData" :key="i" 
           class="category-contents"
           :class="categoryClass(v,i)"
         >          
@@ -48,13 +49,26 @@
             <div class="category-mod">
               <a-icon type="dash"/>
             </div>
-        </div>        
+        </div> -->
 
+        <div v-for="(v,i) in todoDataList" :key="i"
+          class="category-contents"
+          :class="categoryClass(v,i)"
+        >
+          <div class="category-title" @click="setTodoDataList({type:'categoryPick' , idx: i})">
+              <span>{{v.categoryName}}</span>
+          </div>
+          <div class="category-mod">
+            <a-icon type="unordered-list" v-if="i === 0" />
+            <a-icon type="dash" v-else />
+          </div>
+        </div>
+
+        <!-- 카테고리 추가 -->
         <div class="category-plus" 
             :class="categoryPlusStatus === 1 ? 'color-pick' 
             :categoryPlusStatus === 2 ? 'category-title'
-            : ''">
-            <!-- 카테고리 추가 -->
+            : ''">            
             <a-icon type="plus-square" class="category-plus-icon" v-if="categoryPlusStatus === 0" @click="categoryPlusStatus = 1"/>
             <!-- 컬러선택 -->
             <div class="colors" v-if="categoryPlusStatus === 1">
@@ -74,7 +88,7 @@
                 <div class="title">
                     <!-- <a-input placeholder="타이틀명" />
                     <a-icon type="form" /> -->
-                    <a-input-search placeholder="카테고리명" size="large" @search="submitCategory" v-model="categoryCreateData.title">
+                    <a-input-search placeholder="카테고리명" size="large" @search="submitCategory" v-model="categoryCreateData.name">
                     <a-button slot="enterButton" type="primary">
                       저장
                     </a-button>
@@ -92,45 +106,60 @@
   </a-layout>
 </template>
 <script>
-import { mapState , mapMutations } from 'vuex';
+import { mapState , mapMutations , mapActions } from 'vuex';
 export default {
   data() {
     return {
-      pickCategory: 0,
       categoryCreateData:{
         color: '',
-        title: ''
+        name: ''
       },
       categoryPlusStatus: 0,
       categoryData:[]
     }
   },    
   computed: {
-    ...mapState(['fullPath']),    
+    ...mapState(['todoDataList']),    
   },
   watch:{
     categoryPlusStatus(){
       if(this.categoryPlusStatus === 0){
         this.categoryCreateData = {
           color: '',
-          title: ''
+          name: ''
         }
       }
     },
   },
   methods: {
-    ...mapMutations(['setFullPath']),
+    ...mapMutations(['setTodoDataList']),
     submitCategory(){
-      this.categoryData.push({
-          color : this.categoryCreateData.color,
-          title : this.categoryCreateData.title,
-          todoData:[],
-      })
+      this.setTodoDataList(
+        {
+          type:'push', 
+          value: {
+            categoryName: this.categoryCreateData.name,
+            isPick: false,
+            color: this.categoryCreateData.color,
+            todoList:[],
+          }
+        }
+      )
+      // this.categoryData.push({
+      //     color : this.categoryCreateData.color,
+      //     title : this.categoryCreateData.title,
+      //     todoData:[],
+      // })
       this.categoryPlusStatus = 0        
     },
     categoryClass(val,idx){
-      let result = val.color;
-      if(this.pickCategory === idx+1){
+      let result = '';
+      if(val.color){
+        result = val.color;
+      }else {
+        result = 'all'
+      }
+      if(val.isPick){
         result += ' on'
       }
       return result

@@ -13,7 +13,16 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
-    ]
+    ],
+    script:[
+      {
+        src: 'https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js'
+      },
+      {
+        src: 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=017f23ed0c4ee443dbae3a4df8e54a52&libraries=services,clusterer'
+      }
+
+    ],
   },
   /*
   ** Customize the progress-bar color
