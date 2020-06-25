@@ -9,6 +9,7 @@ export const state = () => ({
             idx: 0,
         }
     ],
+    isTodoModal: false,
 })
 
 export const mutations = {
@@ -29,7 +30,7 @@ export const mutations = {
             state.todoDataList[payload.idx].todoList.push(payload.value)
         }else if(payload.type === 'isTab'){
             state.todoDataList[payload.idx].todoList[payload.childIdx].isTab = !state.todoDataList[payload.idx].todoList[payload.childIdx].isTab
-        }else if(payload.type === 'pushTodoText'){
+        }else if(payload.type === 'pushTodoBody'){
             state.todoDataList[payload.idx].todoList[payload.childIdx].isTab = !state.todoDataList[payload.idx].todoList[payload.childIdx].isTab
             state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData.push(payload.value)
         }else if(payload.type === 'changeInputText'){
@@ -37,13 +38,14 @@ export const mutations = {
             state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].bodyText = payload.value.replace(/\n/g , '<br/>')
         }else if(payload.type === 'isInput'){
             state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].isInput = !state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].isInput
-        }else if(payload.type === 'delText'){
-            // ate.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx]
+        }else if(payload.type === 'delBody'){
             state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData.splice(payload.bodyIdx , 1)
-        }else if(payload.type === 'addMap'){
-            state.todoDataList[payload.idx].todoList[payload.childIdx].isTab = !state.todoDataList[payload.idx].todoList[payload.childIdx].isTab
-            state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData.push(payload.value)
+        }else if(payload.type === 'modMap'){
+            state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].roadAddress = payload.value
         }
+    },
+    setIsTodoModal(state , payload){
+        state.isTodoModal = payload
     }
 }
 

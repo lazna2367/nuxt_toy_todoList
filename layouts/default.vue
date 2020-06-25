@@ -102,11 +102,12 @@
       </div>
       <nuxt />
     </a-layout-content>
-      
+    <todoModal v-if="isTodoModal"/>
   </a-layout>
 </template>
 <script>
 import { mapState , mapMutations , mapActions } from 'vuex';
+import todoModal from '../components/modal/todoModal'
 export default {
   data() {
     return {
@@ -119,7 +120,10 @@ export default {
     }
   },    
   computed: {
-    ...mapState(['todoDataList']),    
+    ...mapState(['todoDataList','isTodoModal']),    
+  },
+  components: {
+    todoModal,
   },
   watch:{
     categoryPlusStatus(){

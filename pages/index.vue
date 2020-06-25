@@ -2,7 +2,7 @@
   <div class="home-container">    
     <div class="todo-card-list">
       <!-- <transition-group name="modal" tag="div" class="todo-card-list"> -->    
-        {{isTodoList}}    
+        {{isTodoList}}
         <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="isTodoList.color ? isTodoList.color : ''">
           <div class="todo-top">            
                 <div class="write-list">
@@ -11,14 +11,15 @@
                     <a-icon type="caret-right" v-if="val.isTab" />
                   </div>
                   <div class="icons" v-show="val.isTab">
-                    <div class="text" @click="setTodoDataList({type: 'pushTodoText', idx: isTodoList.idx , childIdx: idx , value : {type:'text' , isInput: true , inputText: '', bodyText : ''}})">
+                    <div class="text" @click="setTodoDataList({type: 'pushTodoBody', idx: isTodoList.idx , childIdx: idx , value : {type:'text' , isInput: true , inputText: '', bodyText : ''}})">
                       <img src="../assets/img/mod-text-icon.png" alt>
                     </div>
-                    <a-icon type="picture" />
+                    <!-- imageTest() -->
+                    <a-icon type="picture" @click="setIsTodoModal(true)"/>
                     <div class="date">
                       <img src="../assets/img/mod-date-icon.png" alt>
                     </div>
-                    <div class="map" @click="clickAddress(idx)">
+                    <div class="map" @click="clickAddress({type:'add', idx: idx})">
                       <img src="../assets/img/mod-map-icon.png" alt>
                     </div>
                   </div>
@@ -35,7 +36,7 @@
                   <textarea cols="30" rows="10" :value="v.inputText" @keyup="changeInputEvent($event , idx , i)" />
                   <div class="edit-box">
                         <a-icon type="check-circle" @click="setTodoDataList({type:'isInput', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})" />
-                        <a-icon type="close-circle" @click="setTodoDataList({type:'delText', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})"/>
+                        <a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})"/>
                   </div>
                 </div>
                 <div class="text-box" v-else-if="!v.isInput" :key="i">
@@ -50,8 +51,18 @@
               </template>
               <!-- 지도 -->
               <template v-else-if="v.type === 'map'">
-                <div class="map" :id="`addMap_${idx}_${i}`" :key="i">
-                
+                <div class="map-body" :key="i">
+                  <!-- 아이콘 -->
+                  <div class="mod">
+                    <div class="edit"><a-icon type="edit" @click="clickAddress({type:'mod', idx:idx , bodyIdx:i})" /></div>
+                    <div class="close"><a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})" /></div>
+                  </div>
+                  <!-- map -->
+                  <div class="map" :id="`addMap_${idx}_${i}`"/>                  
+                  <!-- 주소 -->
+                  <div class="address">
+                    <span>{{v.roadAddress}}</span>
+                  </div>
                 </div>
               </template>
             </template>            
@@ -75,7 +86,7 @@
         <a-icon type="minus-square" theme="filled" />
     </div>
     <!-- <transition name="modal">
-    </transition> -->          
+    </transition> -->
   </div>
 </template>
 
@@ -94,72 +105,38 @@ export default {
     },    
   },
     
-  components: {},
+  components: {
+  },
   mounted() {
     this.htmlWidth = window.innerWidth
     window.addEventListener('resize',() => {
       this.htmlWidth = window.innerWidth
     })       
   },
+  created() {
+      console.log(process)
+      this.reLoadMaps();
+  },
   watch: {
     isTodoList(){
-      console.log('돈다')
-      // this.isTodoList.todoList
-      console.log('this.isTodoList : ', this.isTodoList)
-      if(this.isTodoList.todoList){
-        this.isTodoList.todoList.forEach(val => {
-          val.bodyData.forEach((v,i) => {
-            if(v.type === 'map'){
-                setTimeout(_ => {                
-                let mapContainer = document.getElementById(`addMap_${val.idx}_${i}`)
-                  let mapOption = {
-                    center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-                    level: 3 // 지도의 확대 레벨
-                  }                
-                  
-                  // 주소-좌표 변환 객체를 생성합니다
-                  var geocoder = new kakao.maps.services.Geocoder();
-
-                  //지도 생성
-                  var map = new kakao.maps.Map(mapContainer, mapOption);
-
-                  // 마우스 드래그로 지도 이동 가능여부를 설정합니다
-                  map.setDraggable(false); 
-
-                  // 마우스 휠로 지도 확대,축소 가능여부를 설정합니다
-                  map.setZoomable(false); 
-
-                  // 주소로 좌표를 검색합니다
-                  geocoder.addressSearch(v.roadAddress, function(result, status) {
-                      // 정상적으로 검색이 완료됐으면 
-                      if (status === kakao.maps.services.Status.OK) {
-                          var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-                          // 결과값으로 받은 위치를 마커로 표시합니다
-                          var marker = new kakao.maps.Marker({
-                              map: map,
-                              position: coords
-                          });
-
-                          // 인포윈도우로 장소에 대한 설명을 표시합니다
-                          // var infowindow = new kakao.maps.InfoWindow({
-                          //     content: '<div style="width:150px;text-align:center;padding:6px 0;">우리회사</div>'
-                          // });
-                          // infowindow.open(map, marker);
-
-                          // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-                          map.setCenter(coords);
-                      } 
-                  }); 
-                }, 100)
-            }
-          })
-        })
-      }
-      
+      this.reLoadMaps();
     }
   },
   methods: {
-    ...mapMutations(['setTodoDataList']),
+    ...mapMutations(['setTodoDataList','setIsTodoModal']),
+
+    // imageTest(){
+    //   this.$axios.get(`https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}-4&cx=${GOOGLE_ENGINE_KEY}&searchType=image&q=꼬북이`).then(res => {
+    //     console.log('res : ' , res)
+    //   }).catch(e => {
+    //     console.error(e)
+    //   })
+    // },
+
+    delBodyContents(param){
+      this.setTodoDataList(param);
+      this.reLoadMaps();
+    },
     changeInputEvent(e, childIdx , bodyIdx){
       this.setTodoDataList({
         type: 'changeInputText',
@@ -168,68 +145,98 @@ export default {
         bodyIdx: bodyIdx,
         value: e.srcElement.value
       })
-    },
-    clickAddress(idx){      
+    },    
+    clickAddress(param){
       daum.postcode.load(() => {
           new daum.Postcode({
-              oncomplete: data => {    
-                let mapIdx = this.isTodoList.todoList[idx].bodyData.length            
-                this.setTodoDataList({
-                  type: 'pushTodoText', 
-                  idx: this.isTodoList.idx , 
-                  childIdx: idx , 
-                  value : {
-                    idx: mapIdx,
-                    type:'map',
-                    roadAddress: data.roadAddress
-                  }
-                })
-                setTimeout(_ => {
-                  let mapContainer = document.getElementById(`addMap_${idx}_${mapIdx}`)
-                  console.log('mapContainer : ' , mapContainer)
-                  let mapOption = {
-                    center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-                    level: 3 // 지도의 확대 레벨
-                  }                
-                  
-                  // 주소-좌표 변환 객체를 생성합니다
-                  var geocoder = new kakao.maps.services.Geocoder();
-
-                  //지도 생성
-                  var map = new kakao.maps.Map(mapContainer, mapOption);
-
-                  // 마우스 드래그로 지도 이동 가능여부를 설정합니다
-                  map.setDraggable(false); 
-
-                  // 마우스 휠로 지도 확대,축소 가능여부를 설정합니다
-                  map.setZoomable(false); 
-
-                  // 주소로 좌표를 검색합니다
-                  geocoder.addressSearch(data.roadAddress, function(result, status) {
-                      // 정상적으로 검색이 완료됐으면 
-                      if (status === kakao.maps.services.Status.OK) {
-                          var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-                          // 결과값으로 받은 위치를 마커로 표시합니다
-                          var marker = new kakao.maps.Marker({
-                              map: map,
-                              position: coords
-                          });
-
-                          // 인포윈도우로 장소에 대한 설명을 표시합니다
-                          // var infowindow = new kakao.maps.InfoWindow({
-                          //     content: '<div style="width:150px;text-align:center;padding:6px 0;">우리회사</div>'
-                          // });
-                          // infowindow.open(map, marker);
-
-                          // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
-                          map.setCenter(coords);
-                      } 
-                  }); 
-                }, 100)                
+              oncomplete: data => {   
+                let mapIdx = null;
+                if(param.type === 'add'){
+                  mapIdx = this.isTodoList.todoList[param.idx].bodyData.length
+                  this.setTodoDataList({
+                    type: 'pushTodoBody', 
+                    idx: this.isTodoList.idx , 
+                    childIdx: param.idx , 
+                    value : {
+                      idx: mapIdx,
+                      type:'map',
+                      roadAddress: data.roadAddress
+                    }
+                  })
+                }else if(param.type === 'mod'){
+                  mapIdx = param.bodyIdx
+                  this.setTodoDataList({
+                    type : 'modMap',
+                    idx: this.isTodoList.idx , 
+                    childIdx: param.idx , 
+                    bodyIdx: param.bodyIdx,
+                    value : data.roadAddress
+                  })
+                  // state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].roadAddress = payload.value
+                }
+                
+                setTimeout(_ => { 
+                  this.loadMaps(data.roadAddress,param.idx,mapIdx) 
+                },100)
               }
           }).open();
       })
-    }
+    },
+    reLoadMaps(){
+      if(this.isTodoList.todoList){
+        this.isTodoList.todoList.forEach(val => {
+          val.bodyData.forEach((v,i) => {
+            if(v.type === 'map'){
+              setTimeout(_ => {  
+                this.loadMaps(v.roadAddress,val.idx,i)
+              }, 100)
+            }
+          })
+        })
+      }
+    },
+    loadMaps(address,idx,i){
+        let mapContainer = document.getElementById(`addMap_${idx}_${i}`)
+        
+        let mapOption = {
+          center: new kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+          level: 3 // 지도의 확대 레벨
+        }                
+        
+        // 주소-좌표 변환 객체를 생성합니다
+        var geocoder = new kakao.maps.services.Geocoder();
+
+        //지도 생성
+        var map = new kakao.maps.Map(mapContainer, mapOption);
+
+        // 마우스 드래그로 지도 이동 가능여부를 설정합니다
+        map.setDraggable(false); 
+
+        // 마우스 휠로 지도 확대,축소 가능여부를 설정합니다
+        map.setZoomable(false); 
+
+        // 주소로 좌표를 검색합니다
+        geocoder.addressSearch(address, function(result, status) {
+            // 정상적으로 검색이 완료됐으면 
+            if (status === kakao.maps.services.Status.OK) {
+                var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                // 결과값으로 받은 위치를 마커로 표시합니다
+                var marker = new kakao.maps.Marker({
+                    map: map,
+                    position: coords
+                });
+
+                // 인포윈도우로 장소에 대한 설명을 표시합니다
+                // var infowindow = new kakao.maps.InfoWindow({
+                //     content: '<div style="width:150px;text-align:center;padding:6px 0;">우리회사</div>'
+                // });
+                // infowindow.open(map, marker);
+
+                // 지도의 중심을 결과값으로 받은 위치로 이동시킵니다
+                map.setCenter(coords);
+            } 
+        }); 
+    },
   },
   
 }
@@ -417,11 +424,70 @@ export default {
             display: flex;
           }
         }
-        >.map{
-          border: 2px solid #abb9ff;
+        >.map-body{
           width: 100%;
-          height: 150px;
+          height: 200px;
+          display: flex;
+          position: relative;
+          flex-wrap: wrap;
+          /* border: 1px solid #548cff; */
           margin-bottom: 10px;
+          >.mod{
+            display: none;
+            position: absolute;
+            z-index: 10;
+            right: 5px;
+            top: 5px;
+            >.edit{
+              cursor: pointer;
+              width: 20px;
+              height: 20px;
+              display: flex;
+              justify-content: center;
+              background: white;
+              border-radius: 50px;
+              margin-right: 5px;
+              align-items: center;
+              border: 1.5px solid #0089ff;
+              >i{
+                font-size: 13px;
+                color: #0089ff;
+              }
+            }
+            >.close{
+              cursor: pointer;
+              width: 20px;
+              height: 20px;
+              display: flex;
+              justify-content: center;
+              background: white;
+              border-radius: 50px;
+              >i{
+                font-size: 20px;
+                color: red;
+              }
+            }
+          }
+          >.map{
+            width: 100%;
+            height: 150px;
+          }
+          >.address{
+            width: 100%;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: white;
+          }
+        }
+        >.map-body:hover{
+          >.mod{
+            display: flex;            
+          }
+          >.address{
+            font-weight: bold;
+          }
         }
       }      
     }
