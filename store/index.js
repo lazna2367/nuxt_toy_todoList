@@ -44,6 +44,8 @@ export const mutations = {
             state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].roadAddress = payload.value
         }else if(payload.type === 'modImg'){
             state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].url = payload.value
+        }else if(payload.type === 'modMonth'){
+            state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].date = payload.value
         }
     },
     setIsTodoModal(state , payload){

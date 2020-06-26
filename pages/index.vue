@@ -75,7 +75,12 @@
               <template v-else-if="v.type === 'date'">
                 <div class="date-body" :key="i">
                   <div class="top">
-                    
+                    <!-- 왼쪽 -->
+                    <a-icon type="caret-left" />
+                    <!-- 날짜 -->
+                    <span>{{$moment(v.date).format('YYYY-MM')}}</span>
+                    <!-- 오른쪽 -->
+                    <a-icon type="caret-right" />
                   </div>
                   <div class="body">
                     <!-- <div>
@@ -635,7 +640,23 @@ export default {
           >.top{
             width: 100%;
             height: 50px;
-            border: 1px solid;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            >i{
+              cursor: pointer;
+              font-size: 20px;
+            }
+            >span{
+              font-size: 20px;
+              font-weight: bold;
+            }
+            >.anticon-caret-left{
+              margin-right: 5px;
+            }
+            >.anticon-caret-right{
+              margin-left: 5px;
+            }
           }
           >.body{
             width: 100%;
