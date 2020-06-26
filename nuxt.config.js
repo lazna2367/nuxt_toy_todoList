@@ -40,7 +40,7 @@ export default {
   /*
   ** Plugins to load before mounting the App
   */
-  plugins: [ '@/plugins/ant.js' , '@/plugins/moment.js'],
+  plugins: [ '@/plugins/ant.js' , '@/plugins/moment.js', '@/plugins/vue-datetime'],
   /*
   ** Nuxt.js dev-modules
   */

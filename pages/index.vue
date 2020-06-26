@@ -2,8 +2,9 @@
   <div class="home-container">    
     <div class="todo-card-list">
       <!-- <transition-group name="modal" tag="div" class="todo-card-list"> -->    
-        {{isTodoList}}
-        <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="isTodoList.color ? isTodoList.color : ''">
+        {{isTodoList}}<br/>
+        {{addDateTime}}<br/>
+        <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="isTodoList.color ? isTodoList.color : ''" @click="clickTodoIdx = idx">
           <div class="todo-top">            
                 <div class="write-list">
                   <div class="arrow" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})">
@@ -11,14 +12,22 @@
                     <a-icon type="caret-right" v-if="val.isTab" />
                   </div>
                   <div class="icons" v-show="val.isTab">
+                    <!-- 텍스트 -->
                     <div class="text" @click="setTodoDataList({type: 'pushTodoBody', idx: isTodoList.idx , childIdx: idx , value : {type:'text' , isInput: true , inputText: '', bodyText : ''}})">
                       <img src="../assets/img/mod-text-icon.png" alt>
                     </div>
-                    <!-- imageTest() -->
-                    <a-icon type="picture" @click="setIsTodoModal(true)"/>
+                    <!-- 이미지 -->
+                    <!-- setIsTodoModal(true) -->
+                    <label for="img-form">
+                      <a-icon type="picture"/>
+                    </label>
+                    <input id="img-form" type="file" style="display:none" @change="changeImg({evt : $event , idx: idx , type: 'add'})">
+                    <!-- 날짜 -->
                     <div class="date">
+                      <datetime input-class="datetime" type="datetime" v-model="addDateTime"/>
                       <img src="../assets/img/mod-date-icon.png" alt>
                     </div>
+                    <!-- 지도 -->
                     <div class="map" @click="clickAddress({type:'add', idx: idx})">
                       <img src="../assets/img/mod-map-icon.png" alt>
                     </div>
@@ -49,6 +58,66 @@
                   </div>
                 </div>
               </template>
+              <!-- 이미지 -->
+              <template v-else-if="v.type === 'img'">
+                <div class="img-body" :key="i">
+                  <img :src="v.url" :alt="`img_${i}`">
+                  <div class="img-mod">
+                    <label :for="`img-mod-form_${i}`">
+                        <div class="edit"><a-icon type="edit" /></div>
+                    </label>
+                    <input :id="`img-mod-form_${i}`" type="file" style="display:none" @change="changeImg({evt: $event , idx: idx , bodyIdx: i , type: 'mod'})">
+                    <div class="close"><a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})" /></div>
+                  </div>
+                </div>  
+              </template>
+              <!-- 날짜 -->
+              <template v-else-if="v.type === 'date'">
+                <div class="date-body" :key="i">
+                  <div class="top">
+                    
+                  </div>
+                  <div class="body">
+                    <!-- <div>
+                      이번달 시작요일 : {{$moment(v.date).startOf('month').format('d')}} <br/>
+                      이번달 종료요일 : {{$moment(v.date).endOf('month').format('d')}} <br/>
+                      이번달 마지막 일 : {{$moment(v.date).daysInMonth()}} <br/>
+                      <br/>
+                      저번달 요일 : {{Number($moment(v.date).add(-1,'month').startOf('month').format('d')) -1}} <br/>
+                      저번달 종료요일 : {{$moment(v.date).add(-1,'month').endOf('month').format('d')}} <br/>
+                      저번달 마지막 일 : {{$moment(v.date).add(-1,'month').daysInMonth()}} <br/>
+                      <br/>
+                      다음달 요일 : {{$moment(v.date).add(+1,'month').startOf('month').format('d')}} <br/>
+                      다음달 종료요일 : {{$moment(v.date).add(+1,'month').endOf('month').format('d')}} <br/>
+                      다음달 마지막 일 : {{$moment(v.date).add(+1,'month').daysInMonth()}} <br/>
+                    </div> -->
+                      <!-- 요일 -->
+                      <div v-for="index in 7" :key="`${index}_${index}`" class="day">
+                        {{weekValue(index-1)}}
+                      </div>
+                      <!-- 저번달 -->
+                      <div class="last-month">
+                        <div v-for="index in Number($moment(v.date).startOf('month').format('d'))" :key="index" class="days">
+                          {{
+                            index === 1 ? $moment(v.date).add(-1,'month').daysInMonth() : $moment(v.date).add(-1,'month').daysInMonth() - index
+                          }}
+                        </div>
+                      </div>
+                      <!-- 이번달 -->
+                      <div v-for="index in $moment(v.date).daysInMonth()" :key="index" class="days">
+                        {{index}}
+                      </div>
+                      <!-- 다음달 -->
+                      <div v-for="index in (6 - $moment(v.date).endOf('month').format('d'))" :key="index" class="days">
+                        {{index}}
+                      </div>
+                  </div>
+                  <!-- 
+                  <div class="date">{{v.date}}</div>
+                  <div class="time">{{v.time}}</div>
+                   -->
+                </div>
+              </template>
               <!-- 지도 -->
               <template v-else-if="v.type === 'map'">
                 <div class="map-body" :key="i">
@@ -65,7 +134,8 @@
                   </div>
                 </div>
               </template>
-            </template>            
+              
+            </template>
           </div>
         </div>
         <!-- </transition-group> -->
@@ -95,7 +165,10 @@ import { mapState , mapMutations , mapActions } from 'vuex';
 export default {
   data(){
     return {
-      htmlWidth: 0, 
+      htmlWidth: 0,
+      clickTodoIdx: null,
+      addDateTime: null,
+      nextMonthLength: null,
     }
   },  
   computed:{
@@ -114,25 +187,92 @@ export default {
     })       
   },
   created() {
-      console.log(process)
+    console.log(this)
       this.reLoadMaps();
   },
   watch: {
     isTodoList(){
       this.reLoadMaps();
+    },
+    addDateTime(param){
+      console.log(param)
+      if(this.addDateTime){
+        this.addDateTime = this.$moment(this.addDateTime).format('YYYY-MM-DD HH:mm:ss')
+        this.setTodoDataList({
+          type: 'pushTodoBody', 
+          idx: this.isTodoList.idx , 
+          childIdx: this.clickTodoIdx , 
+          value : {
+            idx: this.isTodoList.todoList[this.clickTodoIdx].bodyData.length,
+            type:'date',
+            date: this.$moment(this.addDateTime).format('YYYY-MM-DD'),
+            time: this.$moment(this.addDateTime).format('HH:mm:ss')
+          }
+        })
+        this.nextMonthLength = this.$moment(this.addDateTime).format('YYYY-MM-DD')
+
+        this.addDateTime = null;
+        this.clickTodoIdx = null;
+      }
     }
   },
   methods: {
     ...mapMutations(['setTodoDataList','setIsTodoModal']),
-
-    // imageTest(){
-    //   this.$axios.get(`https://www.googleapis.com/customsearch/v1?key=${GOOGLE_API_KEY}-4&cx=${GOOGLE_ENGINE_KEY}&searchType=image&q=꼬북이`).then(res => {
-    //     console.log('res : ' , res)
-    //   }).catch(e => {
-    //     console.error(e)
-    //   })
-    // },
-
+    weekValue(idx){
+      let result = '';
+      switch(idx){
+        case 0:
+          result = '일'
+          break
+        case 1:
+          result = '월'
+          break
+        case 2:
+          result = '화'
+          break
+        case 3:
+          result = '수'
+          break
+        case 4:
+          result = '목'
+          break
+        case 5:
+          result = '금'
+          break
+        case 6:
+          result = '토'
+          break
+      }
+      return result;
+    },
+    changeImg(param){
+      console.log('img param : ' , param)
+      if(param.type === 'add'){
+        const file = param.evt.target.files[0];
+        this.setTodoDataList({
+          type: 'pushTodoBody', 
+          idx: this.isTodoList.idx , 
+          childIdx: param.idx , 
+          value : {
+            idx: this.isTodoList.todoList[param.idx].bodyData.length,
+            type:'img',
+            url: URL.createObjectURL(file),
+          }
+        })
+        document.getElementById('img-form').value = null
+      }else if(param.type === 'mod'){
+        const file = param.evt.target.files[0];
+        this.setTodoDataList({
+          type: 'modImg', 
+          idx: this.isTodoList.idx , 
+          childIdx: param.idx , 
+          bodyIdx: param.bodyIdx,
+          value : URL.createObjectURL(file)
+        })
+        document.getElementById(`img-mod-form_${param.bodyIdx}`).value = null
+      }
+      
+    },
     delBodyContents(param){
       this.setTodoDataList(param);
       this.reLoadMaps();
@@ -295,10 +435,12 @@ export default {
               font-size: 20px;
               display: flex;
               align-items: center;
-              >i{
-                cursor: pointer;
-                width: 32px;
-                color: #4c4c4c;;
+              >label{
+                >i{
+                  cursor: pointer;
+                  width: 32px;
+                  color: #4c4c4c;;
+                }  
               }
               >.text{
                 cursor: pointer;
@@ -314,13 +456,24 @@ export default {
                 }
               }
               >.date{
-                cursor: pointer;
                 display: flex;
                 width: 32px;
                 justify-content: center;
                 align-items: center;
                 padding-left: 3px;
                 padding-top: 2px;
+                position: relative;
+                >.vdatetime{
+                  position: absolute;
+                  width: 18px;
+                  height: 18px;
+                  >.vdatetime-input{
+                    cursor: pointer;
+                    opacity: 0;
+                    width: 18px;
+                    height: 18px;
+                  }
+                }
                 >img{
                   width: 18px;
                 }
@@ -422,6 +575,93 @@ export default {
           >.mod-icon{
             cursor: pointer;
             display: flex;
+          }
+        }
+        >.img-body{
+          width: 100%;
+          height: 278px;
+          margin-bottom: 10px;
+          position: relative;
+          >img{
+            width: 100%;
+            height: 100%;
+          }
+          >.img-mod{
+            display: none;
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            
+            .edit{
+              cursor: pointer;
+              width: 20px;
+              height: 20px;
+              display: flex;
+              justify-content: center;
+              background: white;
+              border-radius: 50px;
+              margin-right: 5px;
+              align-items: center;
+              border: 1.5px solid #0089ff;
+              >i{
+                font-size: 13px;
+                color: #0089ff;
+              }
+            }
+            >.close{
+              cursor: pointer;
+              width: 20px;
+              height: 20px;
+              display: flex;
+              justify-content: center;
+              background: white;
+              border-radius: 50px;
+              >i{
+                font-size: 20px;
+                color: red;
+              }
+            }
+          }
+        }
+        >.img-body:hover{
+          >.img-mod{
+            display: flex;
+          }
+        }
+        >.date-body{
+          width: 100%;
+          height: 260px;
+          margin-bottom: 10px;
+          >.top{
+            width: 100%;
+            height: 50px;
+            border: 1px solid;
+          }
+          >.body{
+            width: 100%;
+            height: 170px;
+            display: flex;
+            flex-wrap: wrap;
+            >.day{
+              width: 39.7px;
+              border: 1px solid;
+              height: 35px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
+            >.last-month{
+              display: flex;
+              flex-direction: row-reverse;
+            }
+            .days{
+              width: 39.7px;
+              border: 1px solid;
+              height: 35px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            }
           }
         }
         >.map-body{
