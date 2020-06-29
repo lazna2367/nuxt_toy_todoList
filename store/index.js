@@ -46,6 +46,8 @@ export const mutations = {
             state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].url = payload.value
         }else if(payload.type === 'modMonth'){
             state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].date = payload.value
+        }else if(payload.type === 'isCalendar'){
+            state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].isCalendar = !state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].isCalendar
         }
     },
     setIsTodoModal(state , payload){

@@ -4,6 +4,7 @@
       <!-- <transition-group name="modal" tag="div" class="todo-card-list"> -->    
         {{isTodoList}}<br/>
         {{addDateTime}}<br/>
+        {{dateTimeOut}}
         <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="isTodoList.color ? isTodoList.color : ''" @click="clickTodoIdx = idx">
           <div class="todo-top">            
                 <div class="write-list">
@@ -74,15 +75,17 @@
               <!-- 날짜 -->
               <template v-else-if="v.type === 'date'">
                 <div class="date-body" :key="i">
-                  <div class="top">
+                  <div class="calendar-top">
                     <!-- 왼쪽 -->
-                    <a-icon type="caret-left" />
+                    <!-- <a-icon type="caret-left" /> -->
                     <!-- 날짜 -->
-                    <span>{{$moment(v.date).format('YYYY-MM')}}</span>
+                    <span>{{v.date}}</span>
+                    <a-icon type="calendar" theme="filled" style="color:#0089ff;" v-if="v.isCalendar" @click="setTodoDataList({type:'isCalendar', idx: isTodoList.idx, childIdx: idx , bodyIdx: i})"/>
+                    <a-icon type="calendar" theme="twoTone" two-tone-color="#0089ff" v-else @click="setTodoDataList({type:'isCalendar', idx: isTodoList.idx, childIdx: idx , bodyIdx: i})"/>
                     <!-- 오른쪽 -->
-                    <a-icon type="caret-right" />
+                    <!-- <a-icon type="caret-right" /> -->
                   </div>
-                  <div class="body">
+                  <div class="calendar-body" v-if="v.isCalendar">
                     <!-- <div>
                       이번달 시작요일 : {{$moment(v.date).startOf('month').format('d')}} <br/>
                       이번달 종료요일 : {{$moment(v.date).endOf('month').format('d')}} <br/>
@@ -97,25 +100,41 @@
                       다음달 마지막 일 : {{$moment(v.date).add(+1,'month').daysInMonth()}} <br/>
                     </div> -->
                       <!-- 요일 -->
-                      <div v-for="index in 7" :key="`${index}_${index}`" class="day">
+                      <div v-for="index in 7" :key="`${index}_${index}`" class="day" :style="index === 1 || index === 7 ? 'color:red;' : ''">
                         {{weekValue(index-1)}}
                       </div>
                       <!-- 저번달 -->
                       <div class="last-month">
-                        <div v-for="index in Number($moment(v.date).startOf('month').format('d'))" :key="index" class="days">
+                        <div v-for="index in Number($moment(v.date).startOf('month').format('d'))" :key="`l_${index}`" class="days" style="background:#bdbdbd; color:white;">
                           {{
                             index === 1 ? $moment(v.date).add(-1,'month').daysInMonth() : $moment(v.date).add(-1,'month').daysInMonth() - index
                           }}
                         </div>
                       </div>
                       <!-- 이번달 -->
-                      <div v-for="index in $moment(v.date).daysInMonth()" :key="index" class="days">
+                      <div v-for="index in $moment(v.date).daysInMonth()" :key="`i_${index}`" class="days" :class="index === Number($moment(v.date).format('DD')) ? 'on' : ''">
                         {{index}}
                       </div>
                       <!-- 다음달 -->
-                      <div v-for="index in (6 - $moment(v.date).endOf('month').format('d'))" :key="index" class="days">
+                      <div v-for="index in (6 - $moment(v.date).endOf('month').format('d'))" :key="`n_${index}`" class="days" style="background:#bdbdbd; color:white;">
                         {{index}}
                       </div>
+                      <!-- 수정/삭제 -->
+                      <div class="mod">
+                        <div class="edit" @click="clickTodoBodyIdx = i">
+                          <datetime input-class="datetime" type="datetime" v-model="addDateTime"/>
+                          <a-icon type="edit"/>
+                        </div>
+                        <div class="close"><a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})"/></div>  
+                      </div>
+                  </div>
+                  <div class="footer" v-if="v.isCalendar && $moment(v.date) > $moment()">
+                    <div class="d-day" v-if="$moment(v.date) > $moment()">
+                      <!-- <span>D-{{getDDay()}} 00:00:00</span> -->
+                      <!-- <span>{{getDDay(v.date)}}</span> -->
+                      <!-- <span></span> -->
+                      <DateTimer :endDate="v.date" />
+                    </div>
                   </div>
                   <!-- 
                   <div class="date">{{v.date}}</div>
@@ -167,13 +186,15 @@
 
 <script>
 import { mapState , mapMutations , mapActions } from 'vuex';
+import DateTimer from '../components/modules/DateTimer.vue'
 export default {
   data(){
     return {
+      dateTimeOut: null,
       htmlWidth: 0,
       clickTodoIdx: null,
+      clickTodoBodyIdx: null,
       addDateTime: null,
-      nextMonthLength: null,
     }
   },  
   computed:{
@@ -184,12 +205,13 @@ export default {
   },
     
   components: {
+    DateTimer,
   },
   mounted() {
     this.htmlWidth = window.innerWidth
     window.addEventListener('resize',() => {
       this.htmlWidth = window.innerWidth
-    })       
+    })
   },
   created() {
     console.log(this)
@@ -199,30 +221,59 @@ export default {
     isTodoList(){
       this.reLoadMaps();
     },
-    addDateTime(param){
-      console.log(param)
-      if(this.addDateTime){
-        this.addDateTime = this.$moment(this.addDateTime).format('YYYY-MM-DD HH:mm:ss')
-        this.setTodoDataList({
-          type: 'pushTodoBody', 
-          idx: this.isTodoList.idx , 
-          childIdx: this.clickTodoIdx , 
-          value : {
-            idx: this.isTodoList.todoList[this.clickTodoIdx].bodyData.length,
-            type:'date',
-            date: this.$moment(this.addDateTime).format('YYYY-MM-DD'),
-            time: this.$moment(this.addDateTime).format('HH:mm:ss')
-          }
-        })
-        this.nextMonthLength = this.$moment(this.addDateTime).format('YYYY-MM-DD')
-
-        this.addDateTime = null;
-        this.clickTodoIdx = null;
+    addDateTime(){
+      console.log('addDateTime : ' , this.addDateTime)
+      console.log('clickTodoBodyIdx : ' , this.clickTodoBodyIdx)
+      if(this.clickTodoBodyIdx === null){
+        if(this.addDateTime){
+          console.log('확인2')
+          this.addDateTime = this.$moment(this.addDateTime).format('YYYY-MM-DD HH:mm:ss')
+          this.setTodoDataList({
+            type: 'pushTodoBody', 
+            idx: this.isTodoList.idx , 
+            childIdx: this.clickTodoIdx , 
+            value : {
+              idx: this.isTodoList.todoList[this.clickTodoIdx].bodyData.length,
+              isCalendar: true,
+              type:'date',
+              date: this.addDateTime
+              // time: this.$moment(this.addDateTime).format('HH:mm:ss')
+            }
+          })
+        }
+      }else{
+        if(this.addDateTime){
+        console.log('확인1')
+          this.addDateTime = this.$moment(this.addDateTime).format('YYYY-MM-DD HH:mm:ss')
+          this.setTodoDataList({
+            type: 'modMonth', 
+            idx: this.isTodoList.idx , 
+            childIdx: this.clickTodoIdx , 
+            bodyIdx: this.clickTodoBodyIdx ,
+            value : this.addDateTime
+          })
+        }
       }
+      this.addDateTime = null;
+      this.clickTodoIdx = null;
+      this.clickTodoBodyIdx = null;
     }
   },
   methods: {
     ...mapMutations(['setTodoDataList','setIsTodoModal']),
+    // getDDay(date){
+    //   // let result = this.$moment(date).add(-Number(this.$moment().format('D')), 'days').format('D')      
+      
+    //   // this.dateTimeOut = setInterval(() => {
+          
+    //   // }, 1000)
+    //   let today = this.$moment()
+    //   let end = this.$moment(date)
+    //   let current = this.$moment.duration(end.diff(today));
+    //   let result = `월 : ${current.months()} / 일 : ${current.days()} / 시 : ${current.hours()} / 분 : ${current.minutes()} / 초 : ${current.seconds()}`
+    //   return result
+    //   // return result
+    // },
     weekValue(idx){
       let result = '';
       switch(idx){
@@ -252,31 +303,36 @@ export default {
     },
     changeImg(param){
       console.log('img param : ' , param)
-      if(param.type === 'add'){
-        const file = param.evt.target.files[0];
-        this.setTodoDataList({
-          type: 'pushTodoBody', 
-          idx: this.isTodoList.idx , 
-          childIdx: param.idx , 
-          value : {
-            idx: this.isTodoList.todoList[param.idx].bodyData.length,
-            type:'img',
-            url: URL.createObjectURL(file),
-          }
-        })
-        document.getElementById('img-form').value = null
-      }else if(param.type === 'mod'){
-        const file = param.evt.target.files[0];
-        this.setTodoDataList({
-          type: 'modImg', 
-          idx: this.isTodoList.idx , 
-          childIdx: param.idx , 
-          bodyIdx: param.bodyIdx,
-          value : URL.createObjectURL(file)
-        })
-        document.getElementById(`img-mod-form_${param.bodyIdx}`).value = null
+      if(!param.evt.target.files[0].type.includes('image')){
+         alert('이미지 파일을 첨부해주세요.')
+         document.getElementById('img-form').value = null
+         return false
+      }else {
+        if(param.type === 'add'){
+          const file = param.evt.target.files[0];
+          this.setTodoDataList({
+            type: 'pushTodoBody', 
+            idx: this.isTodoList.idx , 
+            childIdx: param.idx , 
+            value : {
+              idx: this.isTodoList.todoList[param.idx].bodyData.length,
+              type:'img',
+              url: URL.createObjectURL(file),
+            }
+          })
+          document.getElementById('img-form').value = null
+        }else if(param.type === 'mod'){
+          const file = param.evt.target.files[0];
+          this.setTodoDataList({
+            type: 'modImg', 
+            idx: this.isTodoList.idx , 
+            childIdx: param.idx , 
+            bodyIdx: param.bodyIdx,
+            value : URL.createObjectURL(file)
+          })
+          document.getElementById(`img-mod-form_${param.bodyIdx}`).value = null
+        }
       }
-      
     },
     delBodyContents(param){
       this.setTodoDataList(param);
@@ -635,20 +691,31 @@ export default {
         }
         >.date-body{
           width: 100%;
-          height: 260px;
+          // height: 260px;
+          // height: 204px;
           margin-bottom: 10px;
-          >.top{
-            width: 100%;
-            height: 50px;
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          >.calendar-top{
+            width: 192px;
+            height: 31px;
             display: flex;
             justify-content: center;
             align-items: center;
-            >i{
+            margin-bottom: 8px;
+            border-bottom: 1px solid #548cff;
+            // >i{
+            //   cursor: pointer;
+            //   font-size: 20px;
+            // }
+            >.anticon-calendar{
               cursor: pointer;
-              font-size: 20px;
+              margin-left: 8px;
+              font-size: 19px;
             }
             >span{
-              font-size: 20px;
+              font-size: 15px;
               font-weight: bold;
             }
             >.anticon-caret-left{
@@ -658,31 +725,115 @@ export default {
               margin-left: 5px;
             }
           }
-          >.body{
-            width: 100%;
-            height: 170px;
+          >.calendar-body{
+            background: white;
+            width: 192px;
+            // height: 165px;
             display: flex;
             flex-wrap: wrap;
+            align-content: start;
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 6px;
+            position: relative;
             >.day{
-              width: 39.7px;
-              border: 1px solid;
-              height: 35px;
+              width: 24px;
+              /* border: 1px solid; */
+              height: 20px;
               display: flex;
               justify-content: center;
               align-items: center;
+              font-size: 12px;
+              border-bottom: 1px solid #80808085;
+              margin-bottom: 4px;
+              padding-bottom: 8px;
             }
             >.last-month{
               display: flex;
               flex-direction: row-reverse;
             }
             .days{
-              width: 39.7px;
-              border: 1px solid;
-              height: 35px;
+              width: 24px;
+              /* border: 1px solid; */
+              height: 24px;
               display: flex;
               justify-content: center;
               align-items: center;
+              font-size: 12px;
             }
+            .days.on{
+              background: #0089fe;
+              color: white;
+              font-weight: bold;
+              border-radius: 50px;
+            }
+            >.mod{
+              // width: 76px;
+              // height: 100%;
+              position: absolute;
+              right: -36px;
+              top: 0;
+              display: flex;
+              flex-direction: column;
+              >.edit{
+                font-size: 18px;
+                margin-right: 4px;
+                font-size: 14px;
+                background: white;
+                border-radius: 50px;
+                color: #0089ff;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 2px solid #0089ff;
+                margin-bottom: 4px;
+                position: relative;
+                >.vdatetime{
+                  width: 100%;
+                  height: 100%;
+                  position: absolute;
+                  >.vdatetime-input{
+                    width: 100%;
+                    height: 100%;
+                    cursor: pointer;
+                    opacity: 0;
+                  }
+                }
+              }
+              >.close{
+                cursor: pointer;
+                font-size: 18px;
+                background: white;
+                border-radius: 50px;
+                color: red;
+                font-size: 24px;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+              }
+            }
+          }
+          >.footer{
+            width: 192px;
+            height: 24px;
+            display: flex;
+            position: relative;
+            >.d-day{
+              width: 100%;
+              height: 100%;
+              background: white;
+              border-radius: 12px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              font-weight: bold;
+              font-size: 12px;
+            }
+            
           }
         }
         >.map-body{
