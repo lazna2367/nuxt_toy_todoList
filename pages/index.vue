@@ -214,7 +214,6 @@ export default {
     })
   },
   created() {
-    console.log(this)
       this.reLoadMaps();
   },
   watch: {
@@ -222,11 +221,8 @@ export default {
       this.reLoadMaps();
     },
     addDateTime(){
-      console.log('addDateTime : ' , this.addDateTime)
-      console.log('clickTodoBodyIdx : ' , this.clickTodoBodyIdx)
       if(this.clickTodoBodyIdx === null){
         if(this.addDateTime){
-          console.log('확인2')
           this.addDateTime = this.$moment(this.addDateTime).format('YYYY-MM-DD HH:mm:ss')
           this.setTodoDataList({
             type: 'pushTodoBody', 
@@ -237,13 +233,11 @@ export default {
               isCalendar: true,
               type:'date',
               date: this.addDateTime
-              // time: this.$moment(this.addDateTime).format('HH:mm:ss')
             }
           })
         }
       }else{
         if(this.addDateTime){
-        console.log('확인1')
           this.addDateTime = this.$moment(this.addDateTime).format('YYYY-MM-DD HH:mm:ss')
           this.setTodoDataList({
             type: 'modMonth', 
@@ -302,7 +296,6 @@ export default {
       return result;
     },
     changeImg(param){
-      console.log('img param : ' , param)
       if(!param.evt.target.files[0].type.includes('image')){
          alert('이미지 파일을 첨부해주세요.')
          document.getElementById('img-form').value = null
@@ -731,7 +724,6 @@ export default {
             // height: 165px;
             display: flex;
             flex-wrap: wrap;
-            align-content: start;
             border-radius: 16px;
             padding: 12px;
             margin-bottom: 6px;
