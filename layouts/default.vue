@@ -50,6 +50,9 @@
               <a-icon type="dash"/>
             </div>
         </div> -->
+        <div class="logo">
+          
+        </div>
 
         <div v-for="(v,i) in todoDataList" :key="i"
           class="category-contents"
@@ -68,8 +71,9 @@
         <div class="category-plus" 
             :class="categoryPlusStatus === 1 ? 'color-pick' 
             :categoryPlusStatus === 2 ? 'category-title'
-            : ''">            
-            <a-icon type="plus-square" class="category-plus-icon" v-if="categoryPlusStatus === 0" @click="categoryPlusStatus = 1"/>
+            : ''">
+            <a-icon type="plus-circle" class="category-plus-icon" v-if="categoryPlusStatus === 0" @click="categoryPlusStatus = 1"/>
+            <!-- <a-icon type="plus-square" class="category-plus-icon" v-if="categoryPlusStatus === 0" @click="categoryPlusStatus = 1"/> -->
             <!-- 컬러선택 -->
             <div class="colors" v-if="categoryPlusStatus === 1">
               <div class="colors-list" >
@@ -241,7 +245,8 @@ export default {
 
     >div{
       width: 100%;
-      height: 50px;      
+      // height: 50px;
+      height: 32px;
     }
     >.category-contents{
       cursor: pointer;
@@ -399,7 +404,7 @@ export default {
       align-items: center;
       border: 0;
       >.category-plus-icon{
-        font-size: 32px;
+        font-size: 28px;
         cursor: pointer;
       }
     }
