@@ -1,71 +1,39 @@
 <template>
-  <!-- <div>
-    <nuxt />
-  </div> -->
-  <a-layout>
+  <a-layout style="background:none;">
     <a-layout-header class="container-header">
-      <div class="top-nav-logo clearfix">
-          
+      <div class="top-nav-logo">
+          <div class="logo">
+            <span>Amatda</span>
+          </div>
+          <div class="tab">
+            <a-icon type="menu" />
+          </div>
       </div>
-      <div class="top-nav-category clearfix">
-          <a href="#" :class="$route.path === '/' ? 'on' : ''" @click.prevent="$router.push('/')"><p>Home</p></a>
-          <a href="#" :class="$route.path === '/todo' ? 'on' : ''" @click.prevent="$router.push('/todo')"><p>Todo</p></a>
-          <a href="#" :class="$route.path === '/profile' ? 'on' : ''" @click.prevent="$router.push('/')"><p>Profile</p></a>
+      <div class="top-nav-category">
+          <a href="#" :class="$route.path === '/todo' ? 'on' : ''" @click.prevent="$router.push('/todo')"><p><a-icon type="login" /></p></a>
+          <a href="#" :class="$route.path === '/profile' ? 'on' : ''" @click.prevent="$router.push('/')"><p><a-icon type="bell" /></p></a>
+          <a href="#" :class="$route.path === '/' ? 'on' : ''" @click.prevent="$router.push('/')"><p><a-icon type="user" /></p></a>
       </div>
-      <!-- <a-menu 
-        theme="blue"
-        mode="horizontal"        
-        style="float: right; line-height: 64px;"
-      >      
-        <a-menu-item key="1" style="float: left;" @click="$router.push('/')">Home</a-menu-item>
-        <a-menu-item key="2" style="float: left;" @click="$router.push('/todo')">Todo</a-menu-item>
-        <a-menu-item key="3" style="float: left;" @click="$router.push('/profile')">Profile</a-menu-item>        
-      </a-menu> -->
-        <!-- :class="$route.path === '/' ? 'ant-menu-item-selected ' : ''" -->
-        <!-- :class="$route.path === '/todo' ? 'ant-menu-item-selected' : ''" -->
-        <!-- :class="$route.path === '/profile' ? 'ant-menu-item-selected' : ''" -->
     </a-layout-header>
     <a-layout-content class="body-contents">
       <div class="side-nav">
-        <!-- <div class="category-contents all" 
-          :class="pickCategory === 0 ? 'on' : ''"
-          @click="pickCategory = 0 " >
-          <div class="category-title">
-            <span>All</span>
-          </div>
-          <div class="category-mod">
-            <a-icon type="unordered-list" />
-          </div>
-        </div>-->
-
-        <!-- 카테고리 데이터 -->
-        <!-- <div v-for="(v,i) in categoryData" :key="i" 
-          class="category-contents"
-          :class="categoryClass(v,i)"
-        >          
-           <div class="category-title" @click="pickCategory = i+1">
-              <span>{{v.title}}</span>
+        <!-- <div class="logo">
+          
+        </div> -->
+        <template v-if="todoDataList.length > 1">
+          <div v-for="(v,i) in todoDataList" :key="i"
+            class="category-contents"
+            :class="categoryClass(v,i)"
+          >
+            <div class="category-title" @click="setTodoDataList({type:'categoryPick' , idx: i})" >
+                <span>{{v.categoryName}}</span>
             </div>
             <div class="category-mod">
-              <a-icon type="dash"/>
+              <a-icon type="unordered-list" v-if="i === 0" />
+              <a-icon type="dash" v-else />
             </div>
-        </div> -->
-        <div class="logo">
-          
-        </div>
-
-        <div v-for="(v,i) in todoDataList" :key="i"
-          class="category-contents"
-          :class="categoryClass(v,i)"
-        >
-          <div class="category-title" @click="setTodoDataList({type:'categoryPick' , idx: i})">
-              <span>{{v.categoryName}}</span>
           </div>
-          <div class="category-mod">
-            <a-icon type="unordered-list" v-if="i === 0" />
-            <a-icon type="dash" v-else />
-          </div>
-        </div>
+        </template>
 
         <!-- 카테고리 추가 -->
         <div class="category-plus" 
@@ -73,7 +41,6 @@
             :categoryPlusStatus === 2 ? 'category-title'
             : ''">
             <a-icon type="plus-circle" class="category-plus-icon" v-if="categoryPlusStatus === 0" @click="categoryPlusStatus = 1"/>
-            <!-- <a-icon type="plus-square" class="category-plus-icon" v-if="categoryPlusStatus === 0" @click="categoryPlusStatus = 1"/> -->
             <!-- 컬러선택 -->
             <div class="colors" v-if="categoryPlusStatus === 1">
               <div class="colors-list" >
@@ -90,8 +57,6 @@
             <!-- 타이틀 작성 -->
             <div class="title-input" v-if="categoryPlusStatus === 2">
                 <div class="title">
-                    <!-- <a-input placeholder="타이틀명" />
-                    <a-icon type="form" /> -->
                     <a-input-search placeholder="카테고리명" size="large" @search="submitCategory" v-model="categoryCreateData.name">
                     <a-button slot="enterButton" type="primary">
                       저장
@@ -115,12 +80,12 @@ import todoModal from '../components/modal/todoModal'
 export default {
   data() {
     return {
+      isCategoryOnOff: true,
       categoryCreateData:{
         color: '',
         name: ''
       },
       categoryPlusStatus: 0,
-      categoryData:[]
     }
   },    
   computed: {
@@ -153,11 +118,6 @@ export default {
           }
         }
       )
-      // this.categoryData.push({
-      //     color : this.categoryCreateData.color,
-      //     title : this.categoryCreateData.title,
-      //     todoData:[],
-      // })
       this.categoryPlusStatus = 0        
     },
     categoryClass(val,idx){
@@ -176,6 +136,10 @@ export default {
 }
 </script>
 <style lang="scss">
+.ant-layout{
+  background: none;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;
@@ -188,32 +152,50 @@ export default {
 .container-header{
   // background: white !important; 
   // box-shadow: 0px 0px 5px 1px gray;  
+  padding:0 !important;
+  height: 42px !important;
   background: white !important;
-  // box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.3);
-  box-shadow: 3px 0 15px 6px rgba(0, 0, 0, 0.16);
+  // box-shadow: 3px 0 15px 6px rgba(0, 0, 0, 0.16);
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
   z-index: 1;
-  border-bottom: 5px solid #6073ff;
-  // border-bottom: 1px solid #e8e8e8 !important;
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 2px solid #0000001c;
   >.top-nav-logo{
-    float: left;
-    background: black;
-    width: 150px;
-    height: 100%;
+    width: 230px;
+    display: flex;
+    >.logo{
+      font-size: 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 80%;
+      font-weight:bold;
+    }
+    >.tab{
+      border-left: 2px solid #0000001c;
+      border-right: 2px solid #0000001c;
+      font-size: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 20%;
+    }
   }
   >.top-nav-category{
-    height: 100%;
-    float: right;
+      display: flex;
+      font-size: 16px;
     a{
       height: 100%;
-      width: 100px;
+      width: 62px;
       color: #6073ff;
-      float: left;
-      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      >p{
+        margin: 0;
+      }
     }
     a.on{
       color: white;
@@ -225,23 +207,26 @@ export default {
   // background: #14193a;
   // background: url('../assets/img/space-image.jpg') no-repeat center;
   // background-size: cover;
-  // height: calc(100vh - 64px);    
+  height: calc(100vh - 42px);    
+  // height: 100vh;
   display: flex;
-  margin-top: 64px;
-  height: calc(100vh - 64px);
+  margin-top: 42px;
   width: 100%;
   min-height: 1000px;
   >.side-nav{
-    width: 15%;
-    height: calc(100vh - 64px);   
-    // border: 5px solid white;
+    z-index: 1;
+    
+    width: 231px;
+    flex-shrink: 0;
+    height: calc(100vh - 42px);   
     overflow: auto;  
     -ms-overflow-style: none;
+    border-right: 2px solid #0000001c;;
     &::-webkit-scrollbar {
         display:none;
     }
-    -webkit-box-shadow: rgba(0,0,0,.16) 3px 0 15px;
-    box-shadow: 3px 0 15px rgba(0,0,0,.16);
+    // -webkit-box-shadow: rgba(0,0,0,.16) 3px 0 15px;
+    // box-shadow: 3px 0 15px rgba(0,0,0,.16);
 
     >div{
       width: 100%;
@@ -251,11 +236,14 @@ export default {
     >.category-contents{
       cursor: pointer;
       display: flex;
+      height: 42px;
+      // margin-bottom: 5px;
       >.category-title{
         display: flex;        
         justify-content: center;
         align-items: center;
-        width: 85%;
+        // width: 80%;
+        width: 196px;
         >span{
           // font-weight: bold;
         }
@@ -264,12 +252,11 @@ export default {
         display: flex;        
         justify-content: center;
         align-items: center;        
-        width: 15%; 
+        width: 20%; 
         >i{
             color: black;
         }
       }
-      margin-bottom: 5px;
     }
     >.category-contents.all{
       border: 1px solid #5d5d5d;

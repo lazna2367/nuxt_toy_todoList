@@ -620,22 +620,24 @@ export default {
 
 <style lang="scss">
 .home-container{
-  width: 85%;
-  height: calc(100vh - 64px);
+  // flex-shrink: 0;
+  width: 1306px;
+  height: calc(100vh - 42px);
+  // height: 100vh;
   margin: 0 auto;  
   display: flex;
   flex-wrap: wrap;
   padding: 30px 50px 0px 50px;
   overflow-y: auto;
   >.todo-card-list{
-    background: white;
-    padding: 50px;
-    border-radius: 30px;
+    // background: white;
+    // padding: 50px;
+    // border-radius: 30px;
     width: 93%;
     display: flex;
     flex-flow: wrap;
-    box-shadow: 3px 0 15px 2px rgba(0, 0, 0, 0.16);
-    margin-bottom: 30px;
+    // box-shadow: 3px 0 15px 2px rgba(0, 0, 0, 0.16);
+    // margin-bottom: 30px;
     >.todo-card-void{
       width: 300px;
       height: 300px;
