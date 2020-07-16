@@ -1,11 +1,14 @@
 <template>
-  <div class="home-container">    
+  <div class="home-container">
+    <div class="top-title">
+      <span>카테고리 명</span>
+    </div>
     <div class="todo-card-list">
       <!-- <transition-group name="modal" tag="div" class="todo-card-list"> -->    
         <!-- all -->
         <template v-if="isCategoryAll">
-        {{todoDataList}}<br/>
-        {{isTodoList}}<br/>
+        <!-- {{todoDataList}}<br/>
+        {{isTodoList}}<br/> -->
           <template v-for="(value,index) in todoDataList">
             <div v-for="(val, idx) in value.todoList" class="todo-card" :key="idx" :class="value.color ? value.color : ''" @click="clickTodoIdx = idx">
               <div class="todo-top" :key="index">
@@ -169,10 +172,13 @@
         </template>
         <!-- all -->
         <template v-else>
-          {{isTodoList}}<br/>
-          {{clickTodoIdx}}<br/>
+          <!-- {{isTodoList}}<br/>
+          {{clickTodoIdx}}<br/> -->
           <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="isTodoList.color ? isTodoList.color : ''" @click="clickTodoIdx = idx">
             <div class="todo-top">
+                  <div class="del-btn" v-if="isDeleteTodo" @click="setTodoDataList({type: 'delTodo', idx: isTodoList.idx , childIdx: idx})">
+                    <a-icon type="delete" theme="twoTone" two-tone-color="red"/>
+                  </div>
                   <div class="write-list">
                     <div class="arrow" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})">
                       <a-icon type="caret-left" v-if="!val.isTab" />
@@ -344,7 +350,7 @@
                 }
               })"
         />
-        <a-icon type="minus-square" theme="filled" />
+        <a-icon type="minus-square" :theme="isDeleteTodo ? '' : 'filled'"  @click="isDeleteTodo = !isDeleteTodo" />
     </div>
     <!-- <transition name="modal">
     </transition> -->
@@ -357,6 +363,7 @@ import DateTimer from '../components/modules/DateTimer.vue'
 export default {
   data(){
     return {
+      isDeleteTodo: false,
       dateTimeOut: null,
       htmlWidth: 0,
       clickTodoIdx: null,
@@ -371,7 +378,7 @@ export default {
     },
     isCategoryAll(){
       let result = '';
-      if(this.isTodoList.categoryName.includes('All')){
+      if(this.isTodoList?.categoryName.includes('All')){
         result = true
       }else {
         result = false
@@ -621,21 +628,44 @@ export default {
 <style lang="scss">
 .home-container{
   // flex-shrink: 0;
-  width: 1306px;
+  // width: 1306px;
+  position: relative;
+  background: #dfe1ed;
+  width: 100%;
   height: calc(100vh - 42px);
   // height: 100vh;
   margin: 0 auto;  
   display: flex;
   flex-wrap: wrap;
-  padding: 30px 50px 0px 50px;
+  padding: 80px 100px 0px 30px;
   overflow-y: auto;
+  >.top-title{
+    position: absolute;
+    top: 0;
+    width: 100%;
+    background: white;
+    left: 0;
+    border-bottom: 2px solid #c5c5c5;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 18px;
+  }
   >.todo-card-list{
+    display: grid;
+    grid-template-columns: repeat(auto-fit , 300px);
+    width: 100%;
+    justify-content: space-around;
+    row-gap: 30px;
+
     // background: white;
     // padding: 50px;
     // border-radius: 30px;
-    width: 93%;
-    display: flex;
-    flex-flow: wrap;
+    // width: 93%;
+    // display: flex;
+    // flex-flow: wrap;
     // box-shadow: 3px 0 15px 2px rgba(0, 0, 0, 0.16);
     // margin-bottom: 30px;
     >.todo-card-void{
@@ -646,7 +676,8 @@ export default {
     >.todo-card{    
       width: 300px;
       height: 300px;
-      margin: 15px;
+      // margin: 15px;
+      // margin-bottom: 15px;
       display: flex;
       flex-flow: column;
       box-shadow: 2px 0px 6px 1px rgba(0, 0, 0, 0.16);
@@ -657,6 +688,21 @@ export default {
         display: flex;
         justify-content: flex-end;
         align-items: center;
+        position: relative;
+        >.del-btn{
+          cursor: pointer;
+          position: absolute;
+          left: 11px;
+          font-size: 20px;
+          background: white;
+          width: 32px;
+          height: 32px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          border-radius: 20px;
+          border: 2px solid red;
+        }
         >.zoom-in-btn{
             display: flex;
             flex: auto;
@@ -1253,9 +1299,9 @@ export default {
   
   >.side-btn{    
     position: absolute;
-    right: 2%;
-    height: 100px;
-    width: 100px;
+    right: 50px;
+    height: 80px;
+    width: 40px;
     display: flex;
     flex-direction: column;
     >.anticon-plus-square{

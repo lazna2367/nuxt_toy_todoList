@@ -18,13 +18,15 @@ export const mutations = {
             state.todoDataList = payload.value
         }else if(payload.type === 'push'){
             payload.value.idx = state.todoDataList.length
+            let idx = state.todoDataList.findIndex(v => v.isPick)
             state.todoDataList.push(payload.value)
+            state.todoDataList[idx].isPick = false
         }else if(payload.type === 'mod'){
             state.todoDataList.splice(payload.idx, 1 , payload.value)
         }else if(payload.type === 'del'){
             state.todoDataList.splice(payload.idx, 1)
         }else if(payload.type === 'categoryPick'){
-            state.todoDataList[state.todoDataList.findIndex(v => {return v.isPick === true})].isPick = false
+            state.todoDataList[state.todoDataList.findIndex(v => v.isPick === true)].isPick = false
             state.todoDataList[payload.idx].isPick = true
         }else if(payload.type === 'pushTodoList'){
             state.todoDataList[payload.idx].todoList.push(payload.value)
@@ -48,6 +50,8 @@ export const mutations = {
             state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].date = payload.value
         }else if(payload.type === 'isCalendar'){
             state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].isCalendar = !state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].isCalendar
+        }else if(payload.type === 'delTodo'){
+            state.todoDataList[payload.idx].todoList.splice(payload.childIdx , 1)
         }
     },
     setIsTodoModal(state , payload){

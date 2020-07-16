@@ -5,18 +5,18 @@
           <div class="logo">
             <span>Amatda</span>
           </div>
-          <div class="tab">
+          <div class="tab" @click="isCategoryTab = !isCategoryTab" :class="isCategoryTab ? 'on' : ''">
             <a-icon type="menu" />
           </div>
       </div>
       <div class="top-nav-category">
-          <a href="#" :class="$route.path === '/todo' ? 'on' : ''" @click.prevent="$router.push('/todo')"><p><a-icon type="login" /></p></a>
-          <a href="#" :class="$route.path === '/profile' ? 'on' : ''" @click.prevent="$router.push('/')"><p><a-icon type="bell" /></p></a>
-          <a href="#" :class="$route.path === '/' ? 'on' : ''" @click.prevent="$router.push('/')"><p><a-icon type="user" /></p></a>
+          <a href="#" @click.prevent="$router.push('/todo')"><p><a-icon type="login" /></p></a>
+          <a href="#" @click.prevent="$router.push('/')"><p><a-icon type="bell" /></p></a>
+          <a href="#" @click.prevent="$router.push('/')"><p><a-icon type="user" /></p></a>
       </div>
     </a-layout-header>
     <a-layout-content class="body-contents">
-      <div class="side-nav">
+      <div class="side-nav" v-if="isCategoryTab">
         <!-- <div class="logo">
           
         </div> -->
@@ -80,7 +80,7 @@ import todoModal from '../components/modal/todoModal'
 export default {
   data() {
     return {
-      isCategoryOnOff: true,
+      isCategoryTab: true,
       categoryCreateData:{
         color: '',
         name: ''
@@ -112,7 +112,7 @@ export default {
           type:'push', 
           value: {
             categoryName: this.categoryCreateData.name,
-            isPick: false,
+            isPick: true,
             color: this.categoryCreateData.color,
             todoList:[],
           }
@@ -152,6 +152,7 @@ export default {
 .container-header{
   // background: white !important; 
   // box-shadow: 0px 0px 5px 1px gray;  
+  line-height:0 !important;
   padding:0 !important;
   height: 42px !important;
   background: white !important;
@@ -159,37 +160,65 @@ export default {
   position: fixed;
   width: 100%;
   z-index: 1;
-  display: flex;
-  justify-content: space-between;
-  border-bottom: 2px solid #0000001c;
+  // display: flex;
+  // justify-content: space-between;
+  // border-bottom: 2px solid #0000001c;
+  // box-shadow: 18px 0 10px 0 rgba(0,0,0,.16);
+  display: grid;
+  grid-template-columns: 230px 1fr;
+
   >.top-nav-logo{
     width: 230px;
     display: flex;
+    z-index: 1;
+    // box-shadow: 14px 0px 20px 8px rgba(0, 0, 0, 0.16);
+    box-shadow: 9px 0px 34px 2px rgba(0, 0, 0, 0.50);
     >.logo{
+      background: #4b5f82;
       font-size: 18px;
       display: flex;
       justify-content: center;
       align-items: center;
       width: 80%;
       font-weight:bold;
+      // border-bottom: 2px solid #0000001c;
+      >span{
+        cursor: pointer;
+        display: flex;
+        height: 100%;
+        align-items: center;
+        color: white;
+      }
     }
     >.tab{
-      border-left: 2px solid #0000001c;
-      border-right: 2px solid #0000001c;
-      font-size: 16px;
+      cursor: pointer;
+      // border: 2px solid #0000001c;
+      background: #4b5f82;
+      color: white;
+      font-size: 18px;
+      border-top: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       width: 20%;
     }
+    >.tab.on{
+      // border-bottom: 0;
+      background: #f1f2f6;
+      color: #4b5f82;
+    }
   }
   >.top-nav-category{
-      display: flex;
-      font-size: 16px;
+    z-index: 0;
+    background: #3e536e;
+    display: flex;
+    font-size: 16px;
+    justify-content: flex-end;
+    // border-bottom: 2px solid rgba(0,0,0,0.1098);
     a{
       height: 100%;
       width: 62px;
-      color: #6073ff;
+      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -213,18 +242,21 @@ export default {
   margin-top: 42px;
   width: 100%;
   min-height: 1000px;
+  z-index: 1;
   >.side-nav{
-    z-index: 1;
-    
-    width: 231px;
+    background: #f1f2f6;
+    width: 230px;
     flex-shrink: 0;
     height: calc(100vh - 42px);   
     overflow: auto;  
     -ms-overflow-style: none;
-    border-right: 2px solid #0000001c;;
+    // border-right: 2px solid #0000001c;;
     &::-webkit-scrollbar {
         display:none;
     }
+    padding: 5px;
+    box-shadow: 0px 27px 19px 0px rgba(0, 0, 0, 0.4);
+    z-index: 1;
     // -webkit-box-shadow: rgba(0,0,0,.16) 3px 0 15px;
     // box-shadow: 3px 0 15px rgba(0,0,0,.16);
 
@@ -237,7 +269,7 @@ export default {
       cursor: pointer;
       display: flex;
       height: 42px;
-      // margin-bottom: 5px;
+      margin-bottom: 5px;
       >.category-title{
         display: flex;        
         justify-content: center;
@@ -386,6 +418,7 @@ export default {
     }
 
     >.category-plus{
+      margin-top: 10px;
       display: flex;
       justify-content: center;
       align-items: center;
