@@ -1,7 +1,7 @@
 <template>
   <div class="home-container">
-    <div class="top-title">
-      <span>카테고리 명</span>
+    <div class="top-title" v-if="todoDataList.length > 1">
+      <span>{{isTodoList.categoryName}}</span>
     </div>
     <div class="todo-card-list">
       <!-- <transition-group name="modal" tag="div" class="todo-card-list"> -->    
@@ -176,39 +176,42 @@
           {{clickTodoIdx}}<br/> -->
           <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="isTodoList.color ? isTodoList.color : ''" @click="clickTodoIdx = idx">
             <div class="todo-top">
-                  <div class="del-btn" v-if="isDeleteTodo" @click="setTodoDataList({type: 'delTodo', idx: isTodoList.idx , childIdx: idx})">
-                    <a-icon type="delete" theme="twoTone" two-tone-color="red"/>
+                <div class="del-btn" v-if="isDeleteTodo" @click="setTodoDataList({type: 'delTodo', idx: isTodoList.idx , childIdx: idx})">
+                  <a-icon type="delete" theme="twoTone" two-tone-color="red"/>
+                </div>
+                <div class="zoom-in" v-else @click="setIsZoomTodoModal(!isZoomTodoModal)">
+                  <a-icon type="fullscreen" />
+                </div>
+                <div class="write-list">
+                  <div class="arrow" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})">
+                    <a-icon type="caret-left" v-if="!val.isTab" />
+                    <a-icon type="caret-right" v-if="val.isTab" />
                   </div>
-                  <div class="write-list">
-                    <div class="arrow" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})">
-                      <a-icon type="caret-left" v-if="!val.isTab" />
-                      <a-icon type="caret-right" v-if="val.isTab" />
+                  <div class="icons" v-show="val.isTab">
+                    <!-- 텍스트 -->
+                    <div class="text" @click="setTodoDataList({type: 'pushTodoBody', idx: isTodoList.idx , childIdx: idx , value : {type:'text' , isInput: true , inputText: '', bodyText : ''}})">
+                      <img src="../assets/img/mod-text-icon.png" alt>
                     </div>
-                    <div class="icons" v-show="val.isTab">
-                      <!-- 텍스트 -->
-                      <div class="text" @click="setTodoDataList({type: 'pushTodoBody', idx: isTodoList.idx , childIdx: idx , value : {type:'text' , isInput: true , inputText: '', bodyText : ''}})">
-                        <img src="../assets/img/mod-text-icon.png" alt>
-                      </div>
-                      <!-- 이미지 -->
-                      <!-- setIsTodoModal(true) -->
-                      <label :for="`img-form_${idx}`">
-                        <a-icon type="picture"/>
-                      </label>
-                      <input :id="`img-form_${idx}`" type="file" style="display:none" @change="changeImg({evt : $event , idx: idx , type: 'add'})">
-                      <!-- 날짜 -->
-                      <div class="date">
-                        <datetime input-class="datetime" type="datetime" v-model="addDateTime"/>
-                        <img src="../assets/img/mod-date-icon.png" alt>
-                      </div>
-                      <!-- 지도 -->
-                      <div class="map" @click="clickAddress({type:'add', idx: idx})">
-                        <img src="../assets/img/mod-map-icon.png" alt>
-                      </div>
+                    <!-- 이미지 -->
+                    <!-- setIsTodoModal(true) -->
+                    <label :for="`img-form_${idx}`">
+                      <a-icon type="picture"/>
+                    </label>
+                    <input :id="`img-form_${idx}`" type="file" style="display:none" @change="changeImg({evt : $event , idx: idx , type: 'add'})">
+                    <!-- 날짜 -->
+                    <div class="date">
+                      <datetime input-class="datetime" type="datetime" v-model="addDateTime"/>
+                      <img src="../assets/img/mod-date-icon.png" alt>
+                    </div>
+                    <!-- 지도 -->
+                    <div class="map" @click="clickAddress({type:'add', idx: idx})">
+                      <img src="../assets/img/mod-map-icon.png" alt>
                     </div>
                   </div>
-                  <div class="wrtie-btn" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})">
-                      <a-icon type="form" />                    
-                  </div>              
+                </div>
+                <div class="wrtie-btn" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})">
+                    <a-icon type="form" />                    
+                </div>              
             </div>
             <div class="todo-body">
               <template v-for="(v, i) in val.bodyData">
@@ -372,7 +375,7 @@ export default {
     }
   },  
   computed:{
-    ...mapState(['todoDataList']),
+    ...mapState(['todoDataList','isZoomTodoModal']),
     isTodoList(){
       return this.todoDataList.find(v => {return v.isPick === true})
     },
@@ -437,7 +440,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['setTodoDataList','setIsTodoModal']),
+    ...mapMutations(['setTodoDataList','setIsZoomTodoModal']),
     weekValue(idx){
       let result = '';
       switch(idx){
@@ -689,6 +692,19 @@ export default {
         justify-content: flex-end;
         align-items: center;
         position: relative;
+        >.zoom-in{
+          cursor: pointer;
+          position: absolute;
+          left: 12px;
+          width: 32px;
+          height: 32px;
+          /* background: white; */
+          border-radius: 20px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 26px;
+        }
         >.del-btn{
           cursor: pointer;
           position: absolute;

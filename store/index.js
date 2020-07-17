@@ -10,9 +10,13 @@ export const state = () => ({
         }
     ],
     isTodoModal: false,
+    isZoomTodoModal: false,
 })
 
 export const mutations = {
+    setIsZoomTodoModal(state, payload){
+        state.isZoomTodoModal = payload
+    },
     setTodoDataList(state, payload){
         if(payload.type === 'add'){
             state.todoDataList = payload.value

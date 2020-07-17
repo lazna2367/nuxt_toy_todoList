@@ -71,12 +71,14 @@
       </div>
       <nuxt />
     </a-layout-content>
-    <todoModal v-if="isTodoModal"/>
+    <!-- <todoModal v-if="isTodoModal"/> -->
+    <ZoomTodoModal v-if="isZoomTodoModal"/>
   </a-layout>
 </template>
 <script>
 import { mapState , mapMutations , mapActions } from 'vuex';
-import todoModal from '../components/modal/todoModal'
+// import todoModal from '../components/modal/todoModal'
+import ZoomTodoModal from '../components/modal/ZoomTodoModal'
 export default {
   data() {
     return {
@@ -89,10 +91,10 @@ export default {
     }
   },    
   computed: {
-    ...mapState(['todoDataList','isTodoModal']),    
+    ...mapState(['todoDataList','isTodoModal' , 'isZoomTodoModal']),    
   },
   components: {
-    todoModal,
+    ZoomTodoModal
   },
   watch:{
     categoryPlusStatus(){
@@ -105,7 +107,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(['setTodoDataList']),
+    ...mapMutations(['setTodoDataList','setIsZoomTodoModal']),
     submitCategory(){
       this.setTodoDataList(
         {
