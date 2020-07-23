@@ -1,6 +1,7 @@
 import { Slider } from "ant-design-vue"
 
 export const state = () => ({
+    pickTodoData: null,
     todoDataList: [
         {
             categoryName: 'All',
@@ -14,6 +15,9 @@ export const state = () => ({
 })
 
 export const mutations = {
+    isPickTodoData(state, payload){
+        state.pickTodoData = payload
+    },
     setIsZoomTodoModal(state, payload){
         state.isZoomTodoModal = payload
     },

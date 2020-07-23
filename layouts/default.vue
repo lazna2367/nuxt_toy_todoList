@@ -72,7 +72,7 @@
       <nuxt />
     </a-layout-content>
     <!-- <todoModal v-if="isTodoModal"/> -->
-    <ZoomTodoModal v-if="isZoomTodoModal"/>
+    <ZoomTodoModal v-if="isZoomTodoModal" :categoryData="categoryCreateData"/>
   </a-layout>
 </template>
 <script>

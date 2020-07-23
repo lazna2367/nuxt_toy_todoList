@@ -12,6 +12,9 @@
           <template v-for="(value,index) in todoDataList">
             <div v-for="(val, idx) in value.todoList" class="todo-card" :key="idx" :class="value.color ? value.color : ''" @click="clickTodoIdx = idx">
               <div class="todo-top" :key="index">
+                  <div class="zoom-in" @click="pickZoomTodoModal(val , value)">
+                    <a-icon type="fullscreen" />
+                  </div>
                   <div class="write-list">
                     <div class="arrow" @click="setTodoDataList({type: 'isTab', idx: value.idx , childIdx: idx})">
                       <a-icon type="caret-left" v-if="!val.isTab" />
@@ -179,7 +182,7 @@
                 <div class="del-btn" v-if="isDeleteTodo" @click="setTodoDataList({type: 'delTodo', idx: isTodoList.idx , childIdx: idx})">
                   <a-icon type="delete" theme="twoTone" two-tone-color="red"/>
                 </div>
-                <div class="zoom-in" v-else @click="setIsZoomTodoModal(!isZoomTodoModal)">
+                <div class="zoom-in" v-else @click="pickZoomTodoModal(val)">
                   <a-icon type="fullscreen" />
                 </div>
                 <div class="write-list">
@@ -333,8 +336,14 @@
                     </div>
                   </div>
                 </template>
-                
               </template>
+              <div class="todo-check">
+                <div class="check-line">
+
+                </div>
+              </div>
+              <!-- <div class="todo-check-background">
+              </div> -->
             </div>
           </div>
         </template>
@@ -440,7 +449,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['setTodoDataList','setIsZoomTodoModal']),
+    ...mapMutations(['setTodoDataList','setIsZoomTodoModal','isPickTodoData']),
     weekValue(idx){
       let result = '';
       switch(idx){
@@ -467,6 +476,17 @@ export default {
           break
       }
       return result;
+    },
+    pickZoomTodoModal(val,value){
+      console.log(val)
+      console.log(value)
+      if(value){
+        val.color = value.color
+      }else {
+        val.color = this.isTodoList.color
+      }
+      this.isPickTodoData(val)
+      this.setIsZoomTodoModal(!this.isZoomTodoModal)
     },
     changeImg(param){
       if(!param.evt.target.files[0].type.includes('image')){
@@ -681,6 +701,7 @@ export default {
       height: 300px;
       // margin: 15px;
       // margin-bottom: 15px;
+      position: relative;
       display: flex;
       flex-flow: column;
       box-shadow: 2px 0px 6px 1px rgba(0, 0, 0, 0.16);
@@ -1138,6 +1159,41 @@ export default {
             font-weight: bold;
           }
         }
+        >.todo-check{
+          // width: 60px;
+          // height: 60px;
+          // position: absolute;
+          // bottom: 0px;
+          // left: 0px;
+
+          width: 60px;
+          height: 60px;
+          position: absolute;
+          bottom: 0px;
+          left: 0px;
+          background: #d1dbff;
+          border: 1px solid #548cff;
+          >.check-line{
+            // transform: rotate(45deg);
+            // border-top: 2px dashed #548cff;
+            // position: absolute;
+            // width: 84px;
+            // left: -12px;
+            // bottom: 30px;
+
+            transform: rotate(45deg);
+            border-top: 1px solid #548cff;
+            position: absolute;
+            width: 85px;
+            height: 51px;
+            left: -32px;
+            bottom: -14px;
+            background: #dfe1ed;
+          }
+        }
+        // >.todo-check-background{
+
+        // }
       }      
     }
     
