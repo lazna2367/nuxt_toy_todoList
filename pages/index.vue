@@ -179,42 +179,44 @@
           {{clickTodoIdx}}<br/> -->
           <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="isTodoList.color ? isTodoList.color : ''" @click="clickTodoIdx = idx">
             <div class="todo-top">
-                <div class="del-btn" v-if="isDeleteTodo" @click="setTodoDataList({type: 'delTodo', idx: isTodoList.idx , childIdx: idx})">
-                  <a-icon type="delete" theme="twoTone" two-tone-color="red"/>
-                </div>
-                <div class="zoom-in" v-else @click="pickZoomTodoModal(val)">
-                  <a-icon type="fullscreen" />
-                </div>
-                <div class="write-list">
-                  <div class="arrow" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})">
-                    <a-icon type="caret-left" v-if="!val.isTab" />
-                    <a-icon type="caret-right" v-if="val.isTab" />
+                <template v-if="!val.isClose">
+                  <div class="del-btn" v-if="isDeleteTodo" @click="setTodoDataList({type: 'delTodo', idx: isTodoList.idx , childIdx: idx})">
+                    <a-icon type="delete" theme="twoTone" two-tone-color="red"/>
                   </div>
-                  <div class="icons" v-show="val.isTab">
-                    <!-- 텍스트 -->
-                    <div class="text" @click="setTodoDataList({type: 'pushTodoBody', idx: isTodoList.idx , childIdx: idx , value : {type:'text' , isInput: true , inputText: '', bodyText : ''}})">
-                      <img src="../assets/img/mod-text-icon.png" alt>
+                  <div class="zoom-in" v-else @click="pickZoomTodoModal(val)">
+                    <a-icon type="fullscreen" />
+                  </div>
+                  <div class="write-list">
+                    <div class="arrow" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})">
+                      <a-icon type="caret-left" v-if="!val.isTab" />
+                      <a-icon type="caret-right" v-if="val.isTab" />
                     </div>
-                    <!-- 이미지 -->
-                    <!-- setIsTodoModal(true) -->
-                    <label :for="`img-form_${idx}`">
-                      <a-icon type="picture"/>
-                    </label>
-                    <input :id="`img-form_${idx}`" type="file" style="display:none" @change="changeImg({evt : $event , idx: idx , type: 'add'})">
-                    <!-- 날짜 -->
-                    <div class="date">
-                      <datetime input-class="datetime" type="datetime" v-model="addDateTime"/>
-                      <img src="../assets/img/mod-date-icon.png" alt>
-                    </div>
-                    <!-- 지도 -->
-                    <div class="map" @click="clickAddress({type:'add', idx: idx})">
-                      <img src="../assets/img/mod-map-icon.png" alt>
+                    <div class="icons" v-show="val.isTab">
+                      <!-- 텍스트 -->
+                      <div class="text" @click="setTodoDataList({type: 'pushTodoBody', idx: isTodoList.idx , childIdx: idx , value : {type:'text' , isInput: true , inputText: '', bodyText : ''}})">
+                        <img src="../assets/img/mod-text-icon.png" alt>
+                      </div>
+                      <!-- 이미지 -->
+                      <!-- setIsTodoModal(true) -->
+                      <label :for="`img-form_${idx}`">
+                        <a-icon type="picture"/>
+                      </label>
+                      <input :id="`img-form_${idx}`" type="file" style="display:none" @change="changeImg({evt : $event , idx: idx , type: 'add'})">
+                      <!-- 날짜 -->
+                      <div class="date">
+                        <datetime input-class="datetime" type="datetime" v-model="addDateTime"/>
+                        <img src="../assets/img/mod-date-icon.png" alt>
+                      </div>
+                      <!-- 지도 -->
+                      <div class="map" @click="clickAddress({type:'add', idx: idx})">
+                        <img src="../assets/img/mod-map-icon.png" alt>
+                      </div>
                     </div>
                   </div>
-                </div>
                 <div class="wrtie-btn" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})">
                     <a-icon type="form" />                    
                 </div>              
+                </template>
             </div>
             <div class="todo-body">
               <template v-for="(v, i) in val.bodyData">
@@ -337,9 +339,8 @@
                   </div>
                 </template>
               </template>
-              <div class="todo-check">
+              <div class="todo-check" :class="val.isClose ? 'close' : ''" @click="setTodoDataList({type: 'isClose', idx: isTodoList.idx , childIdx: idx})">
                 <div class="check-line">
-
                 </div>
               </div>
               <!-- <div class="todo-check-background">
@@ -358,6 +359,7 @@
                 value: {
                   idx: isTodoList.todoList.length,
                   isTab: false,
+                  isClose: false,
                   bodyData:[],
                 }
               })"
@@ -682,6 +684,7 @@ export default {
     width: 100%;
     justify-content: space-around;
     row-gap: 30px;
+    column-gap: 42px;
 
     // background: white;
     // padding: 50px;
@@ -704,7 +707,7 @@ export default {
       position: relative;
       display: flex;
       flex-flow: column;
-      box-shadow: 2px 0px 6px 1px rgba(0, 0, 0, 0.16);
+      // box-shadow: 2px 0px 6px 1px rgba(0, 0, 0, 0.16);
 
       >.todo-top{
         width: 100%;
@@ -1171,8 +1174,6 @@ export default {
           position: absolute;
           bottom: 0px;
           left: 0px;
-          background: #d1dbff;
-          border: 1px solid #548cff;
           >.check-line{
             // transform: rotate(45deg);
             // border-top: 2px dashed #548cff;
@@ -1182,18 +1183,26 @@ export default {
             // bottom: 30px;
 
             transform: rotate(45deg);
-            border-top: 1px solid #548cff;
+            border-top: 1px dashed #548cff;
             position: absolute;
             width: 85px;
             height: 51px;
-            left: -32px;
+            left: -30px;
             bottom: -14px;
-            background: #dfe1ed;
+            cursor: pointer;
           }
         }
-        // >.todo-check-background{
-
-        // }
+        >.todo-check.close{
+            border: 1px solid #548cff;
+            background: #d1dbff;
+            cursor: pointer;
+            >.check-line{
+              left: -32px;
+              border-top: 1px solid #548cff;
+              background: #dfe1ed;
+              cursor: auto;
+            }
+        }
       }      
     }
     

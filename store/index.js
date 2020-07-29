@@ -60,6 +60,8 @@ export const mutations = {
             state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].isCalendar = !state.todoDataList[payload.idx].todoList[payload.childIdx].bodyData[payload.bodyIdx].isCalendar
         }else if(payload.type === 'delTodo'){
             state.todoDataList[payload.idx].todoList.splice(payload.childIdx , 1)
+        }else if(payload.type === 'isClose'){
+            state.todoDataList[payload.idx].todoList[payload.childIdx].isClose = !state.todoDataList[payload.idx].todoList[payload.childIdx].isClose
         }
     },
     setIsTodoModal(state , payload){

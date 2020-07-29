@@ -74,7 +74,7 @@ export default {
 
     .todo-card{
         width: 100%;
-        text-align: center;            
+        text-align: center;
         >.card-body{
             width: 800px;            
             display: inline-block;
