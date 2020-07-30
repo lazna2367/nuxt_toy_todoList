@@ -3,12 +3,12 @@ import { Slider } from "ant-design-vue"
 export const state = () => ({
     pickTodoData: null,
     todoDataList: [
-        {
-            categoryName: 'All',
-            isPick: true,
-            color: null,
-            idx: 0,
-        }
+        // {
+        //     categoryName: 'All',
+        //     isPick: true,
+        //     color: null,
+        //     idx: 0,
+        // }
     ],
     isTodoModal: false,
     isZoomTodoModal: false,
@@ -27,8 +27,11 @@ export const mutations = {
         }else if(payload.type === 'push'){
             payload.value.idx = state.todoDataList.length
             let idx = state.todoDataList.findIndex(v => v.isPick)
+            console.log('idx : ', idx)
             state.todoDataList.push(payload.value)
-            state.todoDataList[idx].isPick = false
+            if(idx !== -1){
+                state.todoDataList[idx].isPick = false
+            }
         }else if(payload.type === 'mod'){
             state.todoDataList.splice(payload.idx, 1 , payload.value)
         }else if(payload.type === 'del'){

@@ -3,6 +3,7 @@
     <a-layout-header class="container-header">
       <div class="top-nav-logo">
           <div class="logo">
+            <img src="../assets/img/post-icon.png" alt="">
             <span>Amatda</span>
           </div>
           <div class="tab" @click="isCategoryTab = !isCategoryTab" :class="isCategoryTab ? 'on' : ''">
@@ -20,7 +21,7 @@
         <!-- <div class="logo">
           
         </div> -->
-        <template v-if="todoDataList.length > 1">
+        <!-- <template> -->
           <div v-for="(v,i) in todoDataList" :key="i"
             class="category-contents"
             :class="categoryClass(v,i)"
@@ -29,11 +30,12 @@
                 <span>{{v.categoryName}}</span>
             </div>
             <div class="category-mod">
-              <a-icon type="unordered-list" v-if="i === 0" />
-              <a-icon type="dash" v-else />
+              <!-- <a-icon type="unordered-list" v-if="i === 0" /> -->
+              <!-- <a-icon type="dash" v-else /> -->
+              <a-icon type="dash" />
             </div>
           </div>
-        </template>
+        <!-- </template> -->
 
         <!-- 카테고리 추가 -->
         <div class="category-plus" 
@@ -57,7 +59,7 @@
             <!-- 타이틀 작성 -->
             <div class="title-input" v-if="categoryPlusStatus === 2">
                 <div class="title">
-                    <a-input-search placeholder="카테고리명" size="large" @search="submitCategory" v-model="categoryCreateData.name">
+                    <a-input-search placeholder="카테고리" size="large" @search="submitCategory($event)" v-model="categoryCreateData.name">
                     <a-button slot="enterButton" type="primary">
                       저장
                     </a-button>
@@ -69,8 +71,18 @@
             </div>            
         </div>
       </div>
-      <nuxt />
+      <nuxt v-if="todoDataList.length !== 0"/>
+      <div v-else class="empty"></div>
     </a-layout-content>
+    <div class="oper-background">
+      <div class="category-pointer"></div>
+    </div>
+    <template>
+      <div class="top-oper"></div>
+      <div class="left-oper"></div>
+      <div class="right-oper"></div>
+      <div class="bot-oper"></div>
+    </template>
     <!-- <todoModal v-if="isTodoModal"/> -->
     <ZoomTodoModal v-if="isZoomTodoModal" :categoryData="categoryCreateData"/>
   </a-layout>
@@ -108,19 +120,25 @@ export default {
   },
   methods: {
     ...mapMutations(['setTodoDataList','setIsZoomTodoModal']),
-    submitCategory(){
-      this.setTodoDataList(
-        {
-          type:'push', 
-          value: {
-            categoryName: this.categoryCreateData.name,
-            isPick: true,
-            color: this.categoryCreateData.color,
-            todoList:[],
+    submitCategory(val){
+      console.log('e : ',val)
+      if(val === ''){
+        alert('카테고리 이름을 입력해주세요.')
+        return false
+      }else{
+        this.setTodoDataList(
+          {
+            type:'push', 
+            value: {
+              categoryName: this.categoryCreateData.name,
+              isPick: true,
+              color: this.categoryCreateData.color,
+              todoList:[],
+            }
           }
-        }
-      )
-      this.categoryPlusStatus = 0        
+        )
+        this.categoryPlusStatus = 0
+      }
     },
     categoryClass(val,idx){
       let result = '';
@@ -138,6 +156,15 @@ export default {
 }
 </script>
 <style lang="scss">
+// .oper-background{
+//     width: 100%;
+//     height: 100%;
+//     position: absolute;
+//     z-index: 1;
+// }
+.top-oper{
+
+}
 .ant-layout{
   background: none;
 }
@@ -184,6 +211,11 @@ export default {
       width: 80%;
       font-weight:bold;
       // border-bottom: 2px solid #0000001c;
+      >img{
+        cursor: pointer;
+        width: 30px;
+        margin-right: 10px;
+      }
       >span{
         cursor: pointer;
         display: flex;
@@ -575,7 +607,11 @@ export default {
       }
     }
   }
-  // margin-top: 64px;
+  >.empty{
+    width: 100%;
+    height: 100%;
+    background: #dfe1ed;
+  }
 }
 // .body-contents:after {
 //   content: '';

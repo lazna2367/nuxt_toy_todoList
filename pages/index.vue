@@ -1,192 +1,20 @@
 <template>
   <div class="home-container">
-    <div class="top-title" v-if="todoDataList.length > 1">
+    <div class="top-title">
       <span>{{isTodoList.categoryName}}</span>
     </div>
     <div class="todo-card-list">
-      <!-- <transition-group name="modal" tag="div" class="todo-card-list"> -->    
-        <!-- all -->
-        <template v-if="isCategoryAll">
-        <!-- {{todoDataList}}<br/>
-        {{isTodoList}}<br/> -->
-          <template v-for="(value,index) in todoDataList">
-            <div v-for="(val, idx) in value.todoList" class="todo-card" :key="idx" :class="value.color ? value.color : ''" @click="clickTodoIdx = idx">
-              <div class="todo-top" :key="index">
-                  <div class="zoom-in" @click="pickZoomTodoModal(val , value)">
-                    <a-icon type="fullscreen" />
-                  </div>
-                  <div class="write-list">
-                    <div class="arrow" @click="setTodoDataList({type: 'isTab', idx: value.idx , childIdx: idx})">
-                      <a-icon type="caret-left" v-if="!val.isTab" />
-                      <a-icon type="caret-right" v-if="val.isTab" />
-                    </div>
-                    <div class="icons" v-show="val.isTab">
-                      <!-- 텍스트 -->
-                      <div class="text" @click="setTodoDataList({type: 'pushTodoBody', idx: value.idx , childIdx: idx , value : {type:'text' , isInput: true , inputText: '', bodyText : ''}})">
-                        <img src="../assets/img/mod-text-icon.png" alt>
-                      </div>
-                      <!-- 이미지 -->
-                      <!-- setIsTodoModal(true) -->
-                      <label for="img-form">
-                        <a-icon type="picture"/>
-                      </label>
-                      <input id="img-form" type="file" style="display:none" @change="changeImg({evt : $event , idx: idx , type: 'add'})">
-                      <!-- 날짜 -->
-                      <div class="date">
-                        <datetime input-class="datetime" type="datetime" v-model="addDateTime"/>
-                        <img src="../assets/img/mod-date-icon.png" alt>
-                      </div>
-                      <!-- 지도 -->
-                      <div class="map" @click="clickAddress({type:'add', idx: idx})">
-                        <img src="../assets/img/mod-map-icon.png" alt>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="wrtie-btn" @click="setTodoDataList({type: 'isTab', idx: value.idx , childIdx: idx})">
-                      <a-icon type="form" />                    
-                  </div>              
-              </div>
-              <div class="todo-body">
-              <template v-for="(v, i) in val.bodyData">
-                <!-- 텍스트창 -->
-                <template v-if="v.type === 'text'">
-                  <div class="text-input" v-if="v.isInput" :key="i">
-                    <textarea cols="30" rows="10" :value="v.inputText" @keyup="changeInputEvent($event , idx , i)" />
-                    <div class="edit-box">
-                          <a-icon type="check-circle" @click="setTodoDataList({type:'isInput', idx: value.idx , childIdx: idx ,bodyIdx : i})" />
-                          <a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: value.idx , childIdx: idx ,bodyIdx : i})"/>
-                    </div>
-                  </div>
-                  <div class="text-box" v-else-if="!v.isInput" :key="i">
-                    <!-- <template v-for="(value, index) in v.bodyText">
-                      {{value}}<br :key="index">
-                    </template> -->
-                    <span v-html="v.bodyText"></span>
-                    <div class="mod-icon" @click="setTodoDataList({type:'isInput', idx: value.idx , childIdx: idx ,bodyIdx : i})">
-                        <a-icon type="edit"/>
-                    </div>
-                  </div>
-                </template>
-                <!-- 이미지 -->
-                <template v-else-if="v.type === 'img'">
-                  <div class="img-body" :key="i">
-                    <img :src="v.url" :alt="`img_${i}`">
-                    <div class="img-mod">
-                      <label :for="`img-mod-form_${i}`">
-                          <div class="edit"><a-icon type="edit" /></div>
-                      </label>
-                      <input :id="`img-mod-form_${i}`" type="file" style="display:none" @change="changeImg({evt: $event , idx: idx , bodyIdx: i , type: 'mod'})">
-                      <div class="close"><a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: value.idx , childIdx: idx ,bodyIdx : i})" /></div>
-                    </div>
-                  </div>  
-                </template>
-                <!-- 날짜 -->
-                <template v-else-if="v.type === 'date'">
-                  <div class="date-body" :key="i">
-                    <div class="calendar-top">
-                      <!-- 왼쪽 -->
-                      <!-- <a-icon type="caret-left" /> -->
-                      <!-- 날짜 -->
-                      <span>{{v.date}}</span>
-                      <a-icon type="calendar" theme="filled" style="color:#0089ff;" v-if="v.isCalendar" @click="setTodoDataList({type:'isCalendar', idx: value.idx, childIdx: idx , bodyIdx: i})"/>
-                      <a-icon type="calendar" theme="twoTone" two-tone-color="#0089ff" v-else @click="setTodoDataList({type:'isCalendar', idx: value.idx, childIdx: idx , bodyIdx: i})"/>
-                      <!-- 오른쪽 -->
-                      <!-- <a-icon type="caret-right" /> -->
-                    </div>
-                    <div class="calendar-body" v-if="v.isCalendar">
-                      <!-- <div>
-                        이번달 시작요일 : {{$moment(v.date).startOf('month').format('d')}} <br/>
-                        이번달 종료요일 : {{$moment(v.date).endOf('month').format('d')}} <br/>
-                        이번달 마지막 일 : {{$moment(v.date).daysInMonth()}} <br/>
-                        <br/>
-                        저번달 요일 : {{Number($moment(v.date).add(-1,'month').startOf('month').format('d')) -1}} <br/>
-                        저번달 종료요일 : {{$moment(v.date).add(-1,'month').endOf('month').format('d')}} <br/>
-                        저번달 마지막 일 : {{$moment(v.date).add(-1,'month').daysInMonth()}} <br/>
-                        <br/>
-                        다음달 요일 : {{$moment(v.date).add(+1,'month').startOf('month').format('d')}} <br/>
-                        다음달 종료요일 : {{$moment(v.date).add(+1,'month').endOf('month').format('d')}} <br/>
-                        다음달 마지막 일 : {{$moment(v.date).add(+1,'month').daysInMonth()}} <br/>
-                      </div> -->
-                        <!-- 요일 -->
-                        <div v-for="index in 7" :key="`${index}_${index}`" class="day" :style="index === 1 || index === 7 ? 'color:red;' : ''">
-                          {{weekValue(index-1)}}
-                        </div>
-                        <!-- 저번달 -->
-                        <div class="last-month">
-                          <div v-for="index in Number($moment(v.date).startOf('month').format('d'))" :key="`l_${index}`" class="days" style="background:#bdbdbd; color:white;">
-                            {{
-                              index === 1 ? $moment(v.date).add(-1,'month').daysInMonth() : $moment(v.date).add(-1,'month').daysInMonth() - index
-                            }}
-                          </div>
-                        </div>
-                        <!-- 이번달 -->
-                        <div v-for="index in $moment(v.date).daysInMonth()" :key="`i_${index}`" class="days" :class="index === Number($moment(v.date).format('DD')) ? 'on' : ''">
-                          {{index}}
-                        </div>
-                        <!-- 다음달 -->
-                        <div v-for="index in (6 - $moment(v.date).endOf('month').format('d'))" :key="`n_${index}`" class="days" style="background:#bdbdbd; color:white;">
-                          {{index}}
-                        </div>
-                        <!-- 수정/삭제 -->
-                        <div class="mod">
-                          <div class="edit" @click="clickTodoBodyIdx = i">
-                            <datetime input-class="datetime" type="datetime" v-model="addDateTime"/>
-                            <a-icon type="edit"/>
-                          </div>
-                          <div class="close"><a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: value.idx , childIdx: idx ,bodyIdx : i})"/></div>  
-                        </div>
-                    </div>
-                    <div class="footer" v-if="v.isCalendar && $moment(v.date) > $moment()">
-                      <div class="d-day" v-if="$moment(v.date) > $moment()">
-                        <!-- <span>D-{{getDDay()}} 00:00:00</span> -->
-                        <!-- <span>{{getDDay(v.date)}}</span> -->
-                        <!-- <span></span> -->
-                        <DateTimer :endDate="v.date" />
-                      </div>
-                    </div>
-                    <!-- 
-                    <div class="date">{{v.date}}</div>
-                    <div class="time">{{v.time}}</div>
-                    -->
-                  </div>
-                </template>
-                <!-- 지도 -->
-                <template v-else-if="v.type === 'map'">
-                  <div class="map-body" :key="i">
-                    <!-- 아이콘 -->
-                    <div class="mod">
-                      <div class="edit"><a-icon type="edit" @click="clickAddress({type:'mod', idx:idx , bodyIdx:i})" /></div>
-                      <div class="close"><a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: value.idx , childIdx: idx ,bodyIdx : i})" /></div>
-                    </div>
-                    <!-- map -->
-                    <div class="map" :id="`addMap_${index}_${idx}_${i}`"/>                  
-                    <!-- 주소 -->
-                    <div class="address">
-                      <span>{{v.roadAddress}}</span>
-                    </div>
-                  </div>
-                </template>
-                
-              </template>
-            </div>
-
-            </div>
-          </template>
-        </template>
-        <!-- all -->
-        <template v-else>
-          <!-- {{isTodoList}}<br/>
-          {{clickTodoIdx}}<br/> -->
-          <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="isTodoList.color ? isTodoList.color : ''" @click="clickTodoIdx = idx">
+          <transition-group name="card-transition">
+          <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="val.isClose ? 'off' : isTodoList.color ? isTodoList.color : ''" @click="clickTodoIdx = idx">
             <div class="todo-top">
-                <template v-if="!val.isClose">
+                <template>
                   <div class="del-btn" v-if="isDeleteTodo" @click="setTodoDataList({type: 'delTodo', idx: isTodoList.idx , childIdx: idx})">
                     <a-icon type="delete" theme="twoTone" two-tone-color="red"/>
                   </div>
-                  <div class="zoom-in" v-else @click="pickZoomTodoModal(val)">
+                  <!-- <div class="zoom-in" v-else @click="pickZoomTodoModal(val)">
                     <a-icon type="fullscreen" />
-                  </div>
-                  <div class="write-list">
+                  </div> -->
+                  <div class="write-list" v-if="!val.isClose">
                     <div class="arrow" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})">
                       <a-icon type="caret-left" v-if="!val.isTab" />
                       <a-icon type="caret-right" v-if="val.isTab" />
@@ -213,7 +41,7 @@
                       </div>
                     </div>
                   </div>
-                <div class="wrtie-btn" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})">
+                <div class="wrtie-btn" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})" v-if="!val.isClose">
                     <a-icon type="form" />                    
                 </div>              
                 </template>
@@ -234,7 +62,7 @@
                       {{value}}<br :key="index">
                     </template> -->
                     <span v-html="v.bodyText"></span>
-                    <div class="mod-icon" @click="setTodoDataList({type:'isInput', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})">
+                    <div class="mod-icon" @click="setTodoDataList({type:'isInput', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})" v-if="!val.isClose">
                         <a-icon type="edit"/>
                     </div>
                   </div>
@@ -243,7 +71,7 @@
                 <template v-else-if="v.type === 'img'">
                   <div class="img-body" :key="i">
                     <img :src="v.url" :alt="`img_${i}`">
-                    <div class="img-mod">
+                    <div class="img-mod" v-if="!val.isClose">
                       <label :for="`img-mod-form_${i}`">
                           <div class="edit"><a-icon type="edit" /></div>
                       </label>
@@ -300,7 +128,7 @@
                           {{index}}
                         </div>
                         <!-- 수정/삭제 -->
-                        <div class="mod">
+                        <div class="mod" v-if="!val.isClose">
                           <div class="edit" @click="clickTodoBodyIdx = i">
                             <datetime input-class="datetime" type="datetime" v-model="addDateTime"/>
                             <a-icon type="edit"/>
@@ -326,7 +154,7 @@
                 <template v-else-if="v.type === 'map'">
                   <div class="map-body" :key="i">
                     <!-- 아이콘 -->
-                    <div class="mod">
+                    <div class="mod" v-if="!val.isClose">
                       <div class="edit"><a-icon type="edit" @click="clickAddress({type:'mod', idx:idx , bodyIdx:i})" /></div>
                       <div class="close"><a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})" /></div>
                     </div>
@@ -347,9 +175,7 @@
               </div> -->
             </div>
           </div>
-        </template>
-        <!-- </transition-group> -->
-        <!-- <div class="todo-card-void" v-show="htmlWidth < 1800 && htmlWidth > 1384"/> -->
+          </transition-group>
     </div>
     <div class="side-btn" v-if="isTodoList.color">
         <a-icon type="plus-square" theme="filled" 
@@ -390,15 +216,6 @@ export default {
     isTodoList(){
       return this.todoDataList.find(v => {return v.isPick === true})
     },
-    isCategoryAll(){
-      let result = '';
-      if(this.isTodoList?.categoryName.includes('All')){
-        result = true
-      }else {
-        result = false
-      }
-      return result
-    }
   },
     
   components: {
@@ -651,6 +468,14 @@ export default {
 </script>
 
 <style lang="scss">
+.card-transition-enter-active{
+    transition: opacity 0.3s ease;
+}
+.card-transition-enter,
+.card-transition-leave-active{
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
 .home-container{
   // flex-shrink: 0;
   // width: 1306px;
@@ -679,12 +504,15 @@ export default {
     font-size: 18px;
   }
   >.todo-card-list{
+    width: 100%;
+    >span{
     display: grid;
     grid-template-columns: repeat(auto-fit , 300px);
     width: 100%;
     justify-content: space-around;
     row-gap: 30px;
     column-gap: 42px;
+    row-gap: 42px;
 
     // background: white;
     // padding: 50px;
@@ -1193,6 +1021,7 @@ export default {
           }
         }
         >.todo-check.close{
+            z-index: 1;
             border: 1px solid #548cff;
             background: #d1dbff;
             cursor: pointer;
@@ -1204,6 +1033,25 @@ export default {
             }
         }
       }      
+    }
+    >.todo-card.off{
+      border: 1px solid #5d5d5d;
+      >.todo-top{
+        background: #a0a0a0;
+      }
+      >.todo-body{
+        background: #d8d8d8;
+        .calendar-top{
+          border-bottom: 1px solid #5d5d5d;
+        }
+        >.todo-check{
+          border: 1px solid #5d5d5d;
+          background: #d8d8d8;
+          >.check-line{
+            border-top: 1px solid #5d5d5d;
+          }
+        }
+      }
     }
     
     >.todo-card.yellow{
@@ -1237,6 +1085,11 @@ export default {
         }
         .calendar-top{
           border-bottom: 1px solid #ffbf54;
+        }
+        >.todo-check{
+          >.check-line{
+            border-top: 1px dashed #ffbf54;
+          }
         }
       }
     }
@@ -1272,6 +1125,11 @@ export default {
         .calendar-top{
           border-bottom: 1px solid #ff5954;
         }
+        >.todo-check{
+          >.check-line{
+            border-top: 1px dashed #ff5954;
+          }
+        }
       }
     }
     >.todo-card.blue{
@@ -1305,6 +1163,11 @@ export default {
         }
         .calendar-top{
           border-bottom: 1px solid #548cff;
+        }
+        >.todo-check{
+          >.check-line{
+            border-top: 1px dashed #548cff;
+          }
         }
       }
     }
@@ -1340,6 +1203,11 @@ export default {
         .calendar-top{
           border-bottom: 1px solid #3bc73c;
         }
+        >.todo-check{
+          >.check-line{
+            border-top: 1px dashed #3bc73c;
+          }
+        }
       }
     }
     >.todo-card.purple{
@@ -1374,8 +1242,14 @@ export default {
         .calendar-top{
           border-bottom: 1px solid #ba54ff;
         }
+        >.todo-check{
+          >.check-line{
+            border-top: 1px dashed #ba54ff;
+          }
+        }
       }
     }
+  }
   }
   
   >.side-btn{    
