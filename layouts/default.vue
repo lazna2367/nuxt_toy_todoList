@@ -72,19 +72,20 @@
         </div>
       </div>
       <nuxt v-if="todoDataList.length !== 0"/>
-      <div v-else class="empty"></div>
+      <div v-else class="empty">
+      </div>
     </a-layout-content>
-    <div class="oper-background">
-      <div class="category-pointer"></div>
-    </div>
-    <template>
-      <div class="top-oper"></div>
-      <div class="left-oper"></div>
-      <div class="right-oper"></div>
-      <div class="bot-oper"></div>
-    </template>
     <!-- <todoModal v-if="isTodoModal"/> -->
     <ZoomTodoModal v-if="isZoomTodoModal" :categoryData="categoryCreateData"/>
+    <div class="tutorial" 
+        :class="tutorialStep === 1 ? 'step1' 
+               :tutorialStep === 2 ? 'step2' 
+               :tutorialStep === 3 ? 'step3' 
+               : ''"
+      >
+      <a-icon type="caret-left" theme="filled" />
+      <span>Click!</span>
+    </div>
   </a-layout>
 </template>
 <script>
@@ -100,6 +101,7 @@ export default {
         name: ''
       },
       categoryPlusStatus: 0,
+      tutorialStep:0,
     }
   },    
   computed: {
@@ -156,14 +158,41 @@ export default {
 }
 </script>
 <style lang="scss">
-// .oper-background{
-//     width: 100%;
-//     height: 100%;
-//     position: absolute;
-//     z-index: 1;
-// }
-.top-oper{
+.tutorial{
+  position: fixed;
+  left: 155px;
+  top: 55px;
+  width: 119px;
+  height: 37px;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  -webkit-animation: move .5s infinite;
+  animation: move .5s infinite;
+  >i{
+    font-size: 32px;
+  }
+  >span{
+    font-size: 32px;
+    font-weight: bold;
+  }
+  @keyframes move {
+    // 0%{left: 155px;}
+    // 50%{left: 165px;}
+    // 100%{left: 155px;}
 
+    // 0%{top: 55px;}
+    // 50%{top: 45px;}
+    // 100%{top: 55px;}
+
+    // from{
+    //   top:0;
+    // }
+    // to{
+    //   top:50px;
+    // }
+  }
 }
 .ant-layout{
   background: none;
