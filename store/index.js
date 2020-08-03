@@ -12,9 +12,19 @@ export const state = () => ({
     ],
     isTodoModal: false,
     isZoomTodoModal: false,
+    tutorialStep: {status:false, val:null},
+    
 })
 
 export const mutations = {
+    isTutorialStep(state, payload){
+        if(payload.type === 'status'){
+            state.tutorialStep.status = payload.param
+        }else if(payload.type === 'val'){
+            state.tutorialStep.val = payload.param
+        }
+        
+    },
     isPickTodoData(state, payload){
         state.pickTodoData = payload
     },

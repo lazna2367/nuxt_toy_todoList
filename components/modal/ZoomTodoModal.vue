@@ -18,7 +18,7 @@ export default {
     props:['categoryData'],
     data(){
         return{
-
+            
         }
     },
     computed:{

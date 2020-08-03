@@ -21,7 +21,7 @@
                     </div>
                     <div class="icons" v-show="val.isTab">
                       <!-- 텍스트 -->
-                      <div class="text" @click="setTodoDataList({type: 'pushTodoBody', idx: isTodoList.idx , childIdx: idx , value : {type:'text' , isInput: true , inputText: '', bodyText : ''}})">
+                      <div class="text" @click="setTodoDataList({type: 'pushTodoBody', idx: isTodoList.idx , childIdx: idx , value : {type:'text' , isInput: true , inputText: '', bodyText : ''}}) , isTutorialStep({type:'status',param:false}) , isTutorialStep({type:'val',param:null})">
                         <img src="../assets/img/mod-text-icon.png" alt>
                       </div>
                       <!-- 이미지 -->
@@ -43,7 +43,13 @@
                   </div>
                 <div class="wrtie-btn" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})" v-if="!val.isClose">
                     <a-icon type="form" />                    
-                </div>              
+                </div>         
+                <div class="tutorial step4" 
+                    v-if="tutorialStep.status && tutorialStep.val === 4"
+                  >
+                  <a-icon type="caret-left" theme="filled" />
+                  <span>Click!</span>
+                </div>     
                 </template>
             </div>
             <div class="todo-body">
@@ -177,7 +183,7 @@
           </div>
           </transition-group>
     </div>
-    <div class="side-btn" v-if="isTodoList.color">
+    <div class="side-btn" v-if="isTodoList.color" :style="tutorialStep.status && isTodoList.todoList.length === 1 ? 'pointer-events:none;' : ''">
         <a-icon type="plus-square" theme="filled" 
               @click="setTodoDataList({
                 type:'pushTodoList',
@@ -188,9 +194,16 @@
                   isClose: false,
                   bodyData:[],
                 }
-              })"
+              }), 
+              tutorialStep.status ? isTutorialStep({type:'val',param:4}) : ''"
         />
         <a-icon type="minus-square" :theme="isDeleteTodo ? '' : 'filled'"  @click="isDeleteTodo = !isDeleteTodo" />
+        <div class="tutorial step3" 
+            v-if="tutorialStep.status && tutorialStep.val === 3"
+          >
+          <span>Click!</span>
+          <a-icon type="caret-right" theme="filled" />
+        </div>
     </div>
     <!-- <transition name="modal">
     </transition> -->
@@ -212,7 +225,7 @@ export default {
     }
   },  
   computed:{
-    ...mapState(['todoDataList','isZoomTodoModal']),
+    ...mapState(['tutorialStep','todoDataList','isZoomTodoModal']),
     isTodoList(){
       return this.todoDataList.find(v => {return v.isPick === true})
     },
@@ -249,6 +262,8 @@ export default {
               date: this.addDateTime
             }
           })
+          this.isTutorialStep({type:'status',param:false})
+          this.isTutorialStep({type:'val',param:null})
         }
       }else{
         if(this.addDateTime){
@@ -268,7 +283,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['setTodoDataList','setIsZoomTodoModal','isPickTodoData']),
+    ...mapMutations(['isTutorialStep','setTodoDataList','setIsZoomTodoModal','isPickTodoData']),
     weekValue(idx){
       let result = '';
       switch(idx){
@@ -330,6 +345,8 @@ export default {
             }
           })
           document.getElementById(`img-form_${this.clickTodoIdx}`).value = null
+          this.isTutorialStep({type:'status',param:false})
+          this.isTutorialStep({type:'val',param:null})
         }else if(param.type === 'mod'){
           const file = param.evt.target.files[0];
           this.setTodoDataList({
@@ -373,6 +390,8 @@ export default {
                       roadAddress: data.roadAddress
                     }
                   })
+                  this.isTutorialStep({type:'status',param:false})
+                  this.isTutorialStep({type:'val',param:null})
                 }else if(param.type === 'mod'){
                   mapIdx = param.bodyIdx
                   this.setTodoDataList({

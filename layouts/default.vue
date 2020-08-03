@@ -3,17 +3,17 @@
     <a-layout-header class="container-header">
       <div class="top-nav-logo">
           <div class="logo">
-            <img src="../assets/img/post-icon.png" alt="">
+            <img src="../assets/img/post-icon_w.png" alt="">
             <span>Amatda</span>
           </div>
-          <div class="tab" @click="isCategoryTab = !isCategoryTab" :class="isCategoryTab ? 'on' : ''">
+          <div class="tab" @click="isCategoryTab = !isCategoryTab" :class="isCategoryTab ? 'on' : ''" :style="tutorialStep.status ? 'pointer-events:none;':''">
             <a-icon type="menu" />
           </div>
       </div>
       <div class="top-nav-category">
-          <a href="#" @click.prevent="$router.push('/todo')"><p><a-icon type="login" /></p></a>
+          <!-- <a href="#" @click.prevent="$router.push('/todo')"><p><a-icon type="login" /></p></a>
           <a href="#" @click.prevent="$router.push('/')"><p><a-icon type="bell" /></p></a>
-          <a href="#" @click.prevent="$router.push('/')"><p><a-icon type="user" /></p></a>
+          <a href="#" @click.prevent="$router.push('/')"><p><a-icon type="user" /></p></a> -->
       </div>
     </a-layout-header>
     <a-layout-content class="body-contents">
@@ -41,8 +41,10 @@
         <div class="category-plus" 
             :class="categoryPlusStatus === 1 ? 'color-pick' 
             :categoryPlusStatus === 2 ? 'category-title'
-            : ''">
-            <a-icon type="plus-circle" class="category-plus-icon" v-if="categoryPlusStatus === 0" @click="categoryPlusStatus = 1"/>
+            : ''"
+            :style="tutorialStep.status && todoDataList.length === 1 ? 'pointer-events:none;' : ''"
+        >
+            <a-icon type="plus-circle" class="category-plus-icon" v-if="categoryPlusStatus === 0" @click="categoryPlusStatus = 1 , (tutorialStep.status ? isTutorialStep({type:'val',param:2}) : '')"/>
             <!-- 컬러선택 -->
             <div class="colors" v-if="categoryPlusStatus === 1">
               <div class="colors-list" >
@@ -53,7 +55,7 @@
                   <div class="purple" @click="(categoryPlusStatus = 2 , categoryCreateData.color = 'purple')"></div>
               </div>
               <div class="close" >
-                  <a-icon type="close" @click="categoryPlusStatus = 0"/>
+                  <a-icon type="close" @click="categoryPlusStatus = 0 , (tutorialStep.status ? isTutorialStep({type:'val',param:1}) : '')"/>
               </div>
             </div>
             <!-- 타이틀 작성 -->
@@ -66,22 +68,30 @@
                   </a-input-search>
                 </div>
                 <div class="close" >
-                  <a-icon type="close" @click="categoryPlusStatus = 0"/>
+                  <a-icon type="close" @click="categoryPlusStatus = 0 , (tutorialStep.status ? isTutorialStep({type:'val',param:1}) : '')"/>
               </div>
             </div>            
         </div>
       </div>
       <nuxt v-if="todoDataList.length !== 0"/>
       <div v-else class="empty">
+          <div class="main-template" v-if="!tutorialStep.status">
+            <div class="main-img">
+              <img src="../assets/img/post-icon_m.png" alt="logo">
+            </div>
+            <span class="title">Amatda</span>
+            <span class="sub">일정을 기록하고 메모하세요!</span>
+            <button @click="isTutorialStep({type:'status',param:true}) , isCategoryTab = true , isTutorialStep({type:'val', param:1})">Tutorial</button>
+          </div>
       </div>
     </a-layout-content>
     <!-- <todoModal v-if="isTodoModal"/> -->
     <ZoomTodoModal v-if="isZoomTodoModal" :categoryData="categoryCreateData"/>
     <div class="tutorial" 
-        :class="tutorialStep === 1 ? 'step1' 
-               :tutorialStep === 2 ? 'step2' 
-               :tutorialStep === 3 ? 'step3' 
+        :class="tutorialStep.val === 1 ? 'step1' 
+               :tutorialStep.val === 2 ? 'step2'
                : ''"
+        v-if="tutorialStep.status"
       >
       <a-icon type="caret-left" theme="filled" />
       <span>Click!</span>
@@ -95,17 +105,18 @@ import ZoomTodoModal from '../components/modal/ZoomTodoModal'
 export default {
   data() {
     return {
-      isCategoryTab: true,
+      isCategoryTab: false,
       categoryCreateData:{
         color: '',
         name: ''
       },
       categoryPlusStatus: 0,
-      tutorialStep:0,
     }
   },    
   computed: {
-    ...mapState(['todoDataList','isTodoModal' , 'isZoomTodoModal']),    
+    ...mapState(['tutorialStep','todoDataList','isTodoModal' , 'isZoomTodoModal']),
+  },
+  mounted(){
   },
   components: {
     ZoomTodoModal
@@ -121,7 +132,7 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(['setTodoDataList','setIsZoomTodoModal']),
+    ...mapMutations(['isTutorialStep','setTodoDataList','setIsZoomTodoModal']),
     submitCategory(val){
       console.log('e : ',val)
       if(val === ''){
@@ -140,6 +151,9 @@ export default {
           }
         )
         this.categoryPlusStatus = 0
+        if(this.tutorialStep){
+          this.isTutorialStep({type:'val',param: 3})
+        } 
       }
     },
     categoryClass(val,idx){
@@ -165,11 +179,10 @@ export default {
   width: 119px;
   height: 37px;
   z-index: 1;
-  display: flex;
+  display: none;
   justify-content: center;
   align-items: center;
-  -webkit-animation: move .5s infinite;
-  animation: move .5s infinite;
+  
   >i{
     font-size: 32px;
   }
@@ -177,10 +190,16 @@ export default {
     font-size: 32px;
     font-weight: bold;
   }
+  
+}
+.tutorial.step1{
+  display: flex;
+  -webkit-animation: move .5s infinite;
+  animation: move .5s infinite;
   @keyframes move {
-    // 0%{left: 155px;}
-    // 50%{left: 165px;}
-    // 100%{left: 155px;}
+    0%{left: 155px;}
+    50%{left: 165px;}
+    100%{left: 155px;}
 
     // 0%{top: 55px;}
     // 50%{top: 45px;}
@@ -192,6 +211,42 @@ export default {
     // to{
     //   top:50px;
     // }
+  }
+}
+.tutorial.step2{
+  display: flex;
+  -webkit-animation: move2 .5s infinite;
+  animation: move2 .5s infinite;
+  @keyframes move2 {
+    0%{left: 230px;}
+    50%{left: 240px;}
+    100%{left: 230px;}
+  }
+}
+.tutorial.step3{
+  position: absolute;
+  left: -150px;
+  top: 0;
+  display: flex;
+  -webkit-animation: move3 .5s infinite;
+  animation: move3 .5s infinite;
+  @keyframes move3 {
+    0%{left: -150px;}
+    50%{left: -140px;}
+    100%{left: -150px;}
+  }
+}
+.tutorial.step4{
+  position: absolute;
+  left: 320px;
+  top: 0;
+  display: flex;
+  -webkit-animation: move4 .5s infinite;
+  animation: move4 .5s infinite;
+  @keyframes move4 {
+    0%{left: 320px;}
+    50%{left: 330px;}
+    100%{left: 320px;}
   }
 }
 .ant-layout{
@@ -640,6 +695,46 @@ export default {
     width: 100%;
     height: 100%;
     background: #dfe1ed;
+    >.main-template{
+      // padding-top: 50px;
+      padding-top: 17vh;
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      >.main-img{
+        display: flex;
+        justify-content: center;
+        >img{
+          width: 300px;
+        }
+      }
+      >.title{
+        font-size: 55px;
+        font-weight: bold;
+        font-family: revert;
+        color: #3e536e;
+      }
+      >.sub{
+        font-weight: bold;
+        color: #4b5f82;
+      }
+      >button{
+        border-radius: 5px;
+        border: 3px solid #3e536e;
+        background: #4b5f82;
+        color: white;
+        width: 150px;
+        height: 42px;
+        font-size: 18px;
+        font-weight: bold;
+        font-family: unset;
+        cursor: pointer;
+        margin-top: 20px;
+      }
+      >button:active{
+        border: 0;
+      }
+    }
   }
 }
 // .body-contents:after {
