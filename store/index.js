@@ -13,10 +13,14 @@ export const state = () => ({
     isTodoModal: false,
     isZoomTodoModal: false,
     tutorialStep: {status:false, val:null},
+    isCategoryTab: false,
     
 })
 
 export const mutations = {
+    setIsCategoryTab(state, payload){
+        state.isCategoryTab = payload
+    },
     isTutorialStep(state, payload){
         if(payload.type === 'status'){
             state.tutorialStep.status = payload.param
@@ -44,11 +48,22 @@ export const mutations = {
             }
         }else if(payload.type === 'mod'){
             state.todoDataList.splice(payload.idx, 1 , payload.value)
+        }else if(payload.type === 'setCategoryName'){
+            state.todoDataList[payload.idx].categoryName = payload.value
         }else if(payload.type === 'del'){
             state.todoDataList.splice(payload.idx, 1)
+            console.log('del idx : ',payload.idx)
+            console.log('length : ', state.todoDataList.length)
+            if(state.todoDataList.length >= 1){
+                if(!state.todoDataList.find(v => v.isPick === true)){
+                    state.todoDataList[payload.idx === state.todoDataList.length ? payload.idx-1 : payload.idx].isPick = true
+                }
+            }
         }else if(payload.type === 'categoryPick'){
             state.todoDataList[state.todoDataList.findIndex(v => v.isPick === true)].isPick = false
             state.todoDataList[payload.idx].isPick = true
+        }else if(payload.type === 'isMod'){
+            state.todoDataList[payload.idx].isMod = !state.todoDataList[payload.idx].isMod
         }else if(payload.type === 'pushTodoList'){
             state.todoDataList[payload.idx].todoList.push(payload.value)
         }else if(payload.type === 'isTab'){

@@ -1,212 +1,224 @@
 <template>
   <div class="home-container">
-    <div class="top-title">
-      <span>{{isTodoList.categoryName}}</span>
-    </div>
-    <div class="todo-card-list">
-          <transition-group name="card-transition">
-          <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="val.isClose ? 'off' : isTodoList.color ? isTodoList.color : ''" @click="clickTodoIdx = idx">
-            <div class="todo-top">
-                <template>
-                  <div class="del-btn" v-if="isDeleteTodo" @click="setTodoDataList({type: 'delTodo', idx: isTodoList.idx , childIdx: idx})">
-                    <a-icon type="delete" theme="twoTone" two-tone-color="red"/>
-                  </div>
-                  <!-- <div class="zoom-in" v-else @click="pickZoomTodoModal(val)">
-                    <a-icon type="fullscreen" />
-                  </div> -->
-                  <div class="write-list" v-if="!val.isClose">
-                    <div class="arrow" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})">
-                      <a-icon type="caret-left" v-if="!val.isTab" />
-                      <a-icon type="caret-right" v-if="val.isTab" />
+    <template v-if="isTodoList">
+      <div class="top-title" >
+        <span>{{isTodoList.categoryName}}</span>
+      </div>
+      <div class="todo-card-list">
+            <transition-group name="card-transition">
+            <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="val.isClose ? 'off' : isTodoList.color ? isTodoList.color : ''" @click="clickTodoIdx = idx">
+              <div class="todo-top">
+                  <template>
+                    <div class="del-btn" v-if="isDeleteTodo" @click="setTodoDataList({type: 'delTodo', idx: isTodoList.idx , childIdx: idx})">
+                      <a-icon type="delete" theme="twoTone" two-tone-color="red"/>
                     </div>
-                    <div class="icons" v-show="val.isTab">
-                      <!-- 텍스트 -->
-                      <div class="text" @click="setTodoDataList({type: 'pushTodoBody', idx: isTodoList.idx , childIdx: idx , value : {type:'text' , isInput: true , inputText: '', bodyText : ''}}) , isTutorialStep({type:'status',param:false}) , isTutorialStep({type:'val',param:null})">
-                        <img src="../assets/img/mod-text-icon.png" alt>
+                    <!-- <div class="zoom-in" v-else @click="pickZoomTodoModal(val)">
+                      <a-icon type="fullscreen" />
+                    </div> -->
+                    <div class="write-list" v-if="!val.isClose">
+                      <div class="arrow" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})">
+                        <a-icon type="caret-left" v-if="!val.isTab" />
+                        <a-icon type="caret-right" v-if="val.isTab" />
                       </div>
-                      <!-- 이미지 -->
-                      <!-- setIsTodoModal(true) -->
-                      <label :for="`img-form_${idx}`">
-                        <a-icon type="picture"/>
-                      </label>
-                      <input :id="`img-form_${idx}`" type="file" style="display:none" @change="changeImg({evt : $event , idx: idx , type: 'add'})">
-                      <!-- 날짜 -->
-                      <div class="date">
-                        <datetime input-class="datetime" type="datetime" v-model="addDateTime"/>
-                        <img src="../assets/img/mod-date-icon.png" alt>
-                      </div>
-                      <!-- 지도 -->
-                      <div class="map" @click="clickAddress({type:'add', idx: idx})">
-                        <img src="../assets/img/mod-map-icon.png" alt>
-                      </div>
-                    </div>
-                  </div>
-                <div class="wrtie-btn" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})" v-if="!val.isClose">
-                    <a-icon type="form" />                    
-                </div>         
-                <div class="tutorial step4" 
-                    v-if="tutorialStep.status && tutorialStep.val === 4"
-                  >
-                  <a-icon type="caret-left" theme="filled" />
-                  <span>Click!</span>
-                </div>     
-                </template>
-            </div>
-            <div class="todo-body">
-              <template v-for="(v, i) in val.bodyData">
-                <!-- 텍스트창 -->
-                <template v-if="v.type === 'text'">
-                  <div class="text-input" v-if="v.isInput" :key="i">
-                    <textarea cols="30" rows="10" :value="v.inputText" @keyup="changeInputEvent($event , idx , i)" />
-                    <div class="edit-box">
-                          <a-icon type="check-circle" @click="setTodoDataList({type:'isInput', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})" />
-                          <a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})"/>
-                    </div>
-                  </div>
-                  <div class="text-box" v-else-if="!v.isInput" :key="i">
-                    <!-- <template v-for="(value, index) in v.bodyText">
-                      {{value}}<br :key="index">
-                    </template> -->
-                    <span v-html="v.bodyText"></span>
-                    <div class="mod-icon" @click="setTodoDataList({type:'isInput', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})" v-if="!val.isClose">
-                        <a-icon type="edit"/>
-                    </div>
-                  </div>
-                </template>
-                <!-- 이미지 -->
-                <template v-else-if="v.type === 'img'">
-                  <div class="img-body" :key="i">
-                    <img :src="v.url" :alt="`img_${i}`">
-                    <div class="img-mod" v-if="!val.isClose">
-                      <label :for="`img-mod-form_${i}`">
-                          <div class="edit"><a-icon type="edit" /></div>
-                      </label>
-                      <input :id="`img-mod-form_${i}`" type="file" style="display:none" @change="changeImg({evt: $event , idx: idx , bodyIdx: i , type: 'mod'})">
-                      <div class="close"><a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})" /></div>
-                    </div>
-                  </div>  
-                </template>
-                <!-- 날짜 -->
-                <template v-else-if="v.type === 'date'">
-                  <div class="date-body" :key="i">
-                    <div class="calendar-top">
-                      <!-- 왼쪽 -->
-                      <!-- <a-icon type="caret-left" /> -->
-                      <!-- 날짜 -->
-                      <span>{{v.date}}</span>
-                      <a-icon type="calendar" theme="filled" style="color:#0089ff;" v-if="v.isCalendar" @click="setTodoDataList({type:'isCalendar', idx: isTodoList.idx, childIdx: idx , bodyIdx: i})"/>
-                      <a-icon type="calendar" theme="twoTone" two-tone-color="#0089ff" v-else @click="setTodoDataList({type:'isCalendar', idx: isTodoList.idx, childIdx: idx , bodyIdx: i})"/>
-                      <!-- 오른쪽 -->
-                      <!-- <a-icon type="caret-right" /> -->
-                    </div>
-                    <div class="calendar-body" v-if="v.isCalendar">
-                      <!-- <div>
-                        이번달 시작요일 : {{$moment(v.date).startOf('month').format('d')}} <br/>
-                        이번달 종료요일 : {{$moment(v.date).endOf('month').format('d')}} <br/>
-                        이번달 마지막 일 : {{$moment(v.date).daysInMonth()}} <br/>
-                        <br/>
-                        저번달 요일 : {{Number($moment(v.date).add(-1,'month').startOf('month').format('d')) -1}} <br/>
-                        저번달 종료요일 : {{$moment(v.date).add(-1,'month').endOf('month').format('d')}} <br/>
-                        저번달 마지막 일 : {{$moment(v.date).add(-1,'month').daysInMonth()}} <br/>
-                        <br/>
-                        다음달 요일 : {{$moment(v.date).add(+1,'month').startOf('month').format('d')}} <br/>
-                        다음달 종료요일 : {{$moment(v.date).add(+1,'month').endOf('month').format('d')}} <br/>
-                        다음달 마지막 일 : {{$moment(v.date).add(+1,'month').daysInMonth()}} <br/>
-                      </div> -->
-                        <!-- 요일 -->
-                        <div v-for="index in 7" :key="`${index}_${index}`" class="day" :style="index === 1 || index === 7 ? 'color:red;' : ''">
-                          {{weekValue(index-1)}}
+                      <div class="icons" v-show="val.isTab">
+                        <!-- 텍스트 -->
+                        <div class="text" @click="setTodoDataList({type: 'pushTodoBody', idx: isTodoList.idx , childIdx: idx , value : {type:'text' , isInput: true , inputText: '', bodyText : ''}}) , isTutorialStep({type:'status',param:false}) , isTutorialStep({type:'val',param:null})">
+                          <img src="../assets/img/mod-text-icon.png" alt>
                         </div>
-                        <!-- 저번달 -->
-                        <div class="last-month">
-                          <div v-for="index in Number($moment(v.date).startOf('month').format('d'))" :key="`l_${index}`" class="days" style="background:#bdbdbd; color:white;">
-                            {{
-                              index === 1 ? $moment(v.date).add(-1,'month').daysInMonth() : $moment(v.date).add(-1,'month').daysInMonth() - index
-                            }}
-                          </div>
+                        <!-- 이미지 -->
+                        <!-- setIsTodoModal(true) -->
+                        <label :for="`img-form_${idx}`">
+                          <a-icon type="picture"/>
+                        </label>
+                        <input :id="`img-form_${idx}`" type="file" style="display:none" @change="changeImg({evt : $event , idx: idx , type: 'add'})">
+                        <!-- 날짜 -->
+                        <div class="date">
+                          <datetime input-class="datetime" type="datetime" v-model="addDateTime"/>
+                          <img src="../assets/img/mod-date-icon.png" alt>
                         </div>
-                        <!-- 이번달 -->
-                        <div v-for="index in $moment(v.date).daysInMonth()" :key="`i_${index}`" class="days" :class="index === Number($moment(v.date).format('DD')) ? 'on' : ''">
-                          {{index}}
+                        <!-- 지도 -->
+                        <div class="map" @click="clickAddress({type:'add', idx: idx})">
+                          <img src="../assets/img/mod-map-icon.png" alt>
                         </div>
-                        <!-- 다음달 -->
-                        <div v-for="index in (6 - $moment(v.date).endOf('month').format('d'))" :key="`n_${index}`" class="days" style="background:#bdbdbd; color:white;">
-                          {{index}}
-                        </div>
-                        <!-- 수정/삭제 -->
-                        <div class="mod" v-if="!val.isClose">
-                          <div class="edit" @click="clickTodoBodyIdx = i">
-                            <datetime input-class="datetime" type="datetime" v-model="addDateTime"/>
-                            <a-icon type="edit"/>
-                          </div>
-                          <div class="close"><a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})"/></div>  
-                        </div>
-                    </div>
-                    <div class="footer" v-if="v.isCalendar && $moment(v.date) > $moment()">
-                      <div class="d-day" v-if="$moment(v.date) > $moment()">
-                        <!-- <span>D-{{getDDay()}} 00:00:00</span> -->
-                        <!-- <span>{{getDDay(v.date)}}</span> -->
-                        <!-- <span></span> -->
-                        <DateTimer :endDate="v.date" />
                       </div>
                     </div>
-                    <!-- 
-                    <div class="date">{{v.date}}</div>
-                    <div class="time">{{v.time}}</div>
-                    -->
-                  </div>
-                </template>
-                <!-- 지도 -->
-                <template v-else-if="v.type === 'map'">
-                  <div class="map-body" :key="i">
-                    <!-- 아이콘 -->
-                    <div class="mod" v-if="!val.isClose">
-                      <div class="edit"><a-icon type="edit" @click="clickAddress({type:'mod', idx:idx , bodyIdx:i})" /></div>
-                      <div class="close"><a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})" /></div>
-                    </div>
-                    <!-- map -->
-                    <div class="map" :id="`addMap_${isTodoList.idx}_${idx}_${i}`"/>                  
-                    <!-- 주소 -->
-                    <div class="address">
-                      <span>{{v.roadAddress}}</span>
-                    </div>
-                  </div>
-                </template>
-              </template>
-              <div class="todo-check" :class="val.isClose ? 'close' : ''" @click="setTodoDataList({type: 'isClose', idx: isTodoList.idx , childIdx: idx})">
-                <div class="check-line">
-                </div>
+                  <div class="wrtie-btn" @click="setTodoDataList({type: 'isTab', idx: isTodoList.idx , childIdx: idx})" v-if="!val.isClose">
+                      <a-icon type="form" />                    
+                  </div>         
+                  <div class="tutorial step4" 
+                      v-if="tutorialStep.status && tutorialStep.val === 4"
+                    >
+                    <a-icon type="caret-left" theme="filled" />
+                    <span>Click!</span>
+                  </div>     
+                  </template>
               </div>
-              <!-- <div class="todo-check-background">
-              </div> -->
+              <div class="todo-body">
+                <template v-for="(v, i) in val.bodyData">
+                  <!-- 텍스트창 -->
+                  <template v-if="v.type === 'text'">
+                    <div class="text-input" v-if="v.isInput" :key="i">
+                      <textarea cols="30" rows="10" :value="v.inputText" @keyup="changeInputEvent($event , idx , i)" />
+                      <div class="edit-box">
+                            <a-icon type="check-circle" @click="setTodoDataList({type:'isInput', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})" />
+                            <a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})"/>
+                      </div>
+                    </div>
+                    <div class="text-box" v-else-if="!v.isInput" :key="i">
+                      <!-- <template v-for="(value, index) in v.bodyText">
+                        {{value}}<br :key="index">
+                      </template> -->
+                      <span v-html="v.bodyText"></span>
+                      <div class="mod-icon" @click="setTodoDataList({type:'isInput', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})" v-if="!val.isClose">
+                          <a-icon type="edit"/>
+                      </div>
+                    </div>
+                  </template>
+                  <!-- 이미지 -->
+                  <template v-else-if="v.type === 'img'">
+                    <div class="img-body" :key="i">
+                      <img :src="v.url" :alt="`img_${i}`">
+                      <div class="img-mod" v-if="!val.isClose">
+                        <label :for="`img-mod-form_${i}`">
+                            <div class="edit"><a-icon type="edit" /></div>
+                        </label>
+                        <input :id="`img-mod-form_${i}`" type="file" style="display:none" @change="changeImg({evt: $event , idx: idx , bodyIdx: i , type: 'mod'})">
+                        <div class="close"><a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})" /></div>
+                      </div>
+                    </div>  
+                  </template>
+                  <!-- 날짜 -->
+                  <template v-else-if="v.type === 'date'">
+                    <div class="date-body" :key="i">
+                      <div class="calendar-top">
+                        <!-- 왼쪽 -->
+                        <!-- <a-icon type="caret-left" /> -->
+                        <!-- 날짜 -->
+                        <span>{{v.date}}</span>
+                        <a-icon type="calendar" theme="filled" style="color:#0089ff;" v-if="v.isCalendar" @click="setTodoDataList({type:'isCalendar', idx: isTodoList.idx, childIdx: idx , bodyIdx: i})"/>
+                        <a-icon type="calendar" theme="twoTone" two-tone-color="#0089ff" v-else @click="setTodoDataList({type:'isCalendar', idx: isTodoList.idx, childIdx: idx , bodyIdx: i})"/>
+                        <!-- 오른쪽 -->
+                        <!-- <a-icon type="caret-right" /> -->
+                      </div>
+                      <div class="calendar-body" v-if="v.isCalendar">
+                        <!-- <div>
+                          이번달 시작요일 : {{$moment(v.date).startOf('month').format('d')}} <br/>
+                          이번달 종료요일 : {{$moment(v.date).endOf('month').format('d')}} <br/>
+                          이번달 마지막 일 : {{$moment(v.date).daysInMonth()}} <br/>
+                          <br/>
+                          저번달 요일 : {{Number($moment(v.date).add(-1,'month').startOf('month').format('d')) -1}} <br/>
+                          저번달 종료요일 : {{$moment(v.date).add(-1,'month').endOf('month').format('d')}} <br/>
+                          저번달 마지막 일 : {{$moment(v.date).add(-1,'month').daysInMonth()}} <br/>
+                          <br/>
+                          다음달 요일 : {{$moment(v.date).add(+1,'month').startOf('month').format('d')}} <br/>
+                          다음달 종료요일 : {{$moment(v.date).add(+1,'month').endOf('month').format('d')}} <br/>
+                          다음달 마지막 일 : {{$moment(v.date).add(+1,'month').daysInMonth()}} <br/>
+                        </div> -->
+                          <!-- 요일 -->
+                          <div v-for="index in 7" :key="`${index}_${index}`" class="day" :style="index === 1 || index === 7 ? 'color:red;' : ''">
+                            {{weekValue(index-1)}}
+                          </div>
+                          <!-- 저번달 -->
+                          <div class="last-month">
+                            <div v-for="index in Number($moment(v.date).startOf('month').format('d'))" :key="`l_${index}`" class="days" style="background:#bdbdbd; color:white;">
+                              {{
+                                index === 1 ? $moment(v.date).add(-1,'month').daysInMonth() : $moment(v.date).add(-1,'month').daysInMonth() - index
+                              }}
+                            </div>
+                          </div>
+                          <!-- 이번달 -->
+                          <div v-for="index in $moment(v.date).daysInMonth()" :key="`i_${index}`" class="days" :class="index === Number($moment(v.date).format('DD')) ? 'on' : ''">
+                            {{index}}
+                          </div>
+                          <!-- 다음달 -->
+                          <div v-for="index in (6 - $moment(v.date).endOf('month').format('d'))" :key="`n_${index}`" class="days" style="background:#bdbdbd; color:white;">
+                            {{index}}
+                          </div>
+                          <!-- 수정/삭제 -->
+                          <div class="mod" v-if="!val.isClose">
+                            <div class="edit" @click="clickTodoBodyIdx = i">
+                              <datetime input-class="datetime" type="datetime" v-model="addDateTime"/>
+                              <a-icon type="edit"/>
+                            </div>
+                            <div class="close"><a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})"/></div>  
+                          </div>
+                      </div>
+                      <div class="footer" v-if="v.isCalendar && $moment(v.date) > $moment()">
+                        <div class="d-day" v-if="$moment(v.date) > $moment()">
+                          <!-- <span>D-{{getDDay()}} 00:00:00</span> -->
+                          <!-- <span>{{getDDay(v.date)}}</span> -->
+                          <!-- <span></span> -->
+                          <DateTimer :endDate="v.date" />
+                        </div>
+                      </div>
+                      <!-- 
+                      <div class="date">{{v.date}}</div>
+                      <div class="time">{{v.time}}</div>
+                      -->
+                    </div>
+                  </template>
+                  <!-- 지도 -->
+                  <template v-else-if="v.type === 'map'">
+                    <div class="map-body" :key="i">
+                      <!-- 아이콘 -->
+                      <div class="mod" v-if="!val.isClose">
+                        <div class="edit"><a-icon type="edit" @click="clickAddress({type:'mod', idx:idx , bodyIdx:i})" /></div>
+                        <div class="close"><a-icon type="close-circle" @click="delBodyContents({type:'delBody', idx: isTodoList.idx , childIdx: idx ,bodyIdx : i})" /></div>
+                      </div>
+                      <!-- map -->
+                      <div class="map" :id="`addMap_${isTodoList.idx}_${idx}_${i}`"/>                  
+                      <!-- 주소 -->
+                      <div class="address">
+                        <span>{{v.roadAddress}}</span>
+                      </div>
+                    </div>
+                  </template>
+                </template>
+                <div class="todo-check" :class="val.isClose ? 'close' : ''" @click="setTodoDataList({type: 'isClose', idx: isTodoList.idx , childIdx: idx})">
+                  <div class="check-line">
+                  </div>
+                </div>
+                <!-- <div class="todo-check-background">
+                </div> -->
+              </div>
             </div>
+            </transition-group>
+      </div>
+      <div class="side-btn" :style="tutorialStep.status && isTodoList.todoList.length === 1 ? 'pointer-events:none;' : ''" >
+          <a-icon type="plus-square" theme="filled" 
+                @click="setTodoDataList({
+                  type:'pushTodoList',
+                  idx: isTodoList.idx,
+                  value: {
+                    idx: isTodoList.todoList.length,
+                    isTab: false,
+                    isClose: false,
+                    bodyData:[],
+                  }
+                }), 
+                tutorialStep.status ? isTutorialStep({type:'val',param:4}) : ''"
+          />
+          <a-icon type="minus-square" :theme="isDeleteTodo ? '' : 'filled'"  @click="isDeleteTodo = !isDeleteTodo" />
+          <div class="tutorial step3" 
+              v-if="tutorialStep.status && tutorialStep.val === 3"
+            >
+            <span>Click!</span>
+            <a-icon type="caret-right" theme="filled" />
           </div>
-          </transition-group>
-    </div>
-    <div class="side-btn" v-if="isTodoList.color" :style="tutorialStep.status && isTodoList.todoList.length === 1 ? 'pointer-events:none;' : ''">
-        <a-icon type="plus-square" theme="filled" 
-              @click="setTodoDataList({
-                type:'pushTodoList',
-                idx: isTodoList.idx,
-                value: {
-                  idx: isTodoList.todoList.length,
-                  isTab: false,
-                  isClose: false,
-                  bodyData:[],
-                }
-              }), 
-              tutorialStep.status ? isTutorialStep({type:'val',param:4}) : ''"
-        />
-        <a-icon type="minus-square" :theme="isDeleteTodo ? '' : 'filled'"  @click="isDeleteTodo = !isDeleteTodo" />
-        <div class="tutorial step3" 
-            v-if="tutorialStep.status && tutorialStep.val === 3"
-          >
-          <span>Click!</span>
-          <a-icon type="caret-right" theme="filled" />
+      </div>
+    </template>
+    <template v-if="isTodoList === null">
+        <div class="empty">
+            <div class="main-template" v-if="!tutorialStep.status">
+              <div class="main-img">
+                <img src="../assets/img/post-icon_m.png" alt="logo">
+              </div>
+              <span class="title">Amatda</span>
+              <span class="sub">일정을 기록하고 메모하세요!</span>
+              <button @click="isTutorialStep({type:'status',param:true}) , setIsCategoryTab(true) , isTutorialStep({type:'val', param:1})">Tutorial</button>
+            </div>
         </div>
-    </div>
-    <!-- <transition name="modal">
-    </transition> -->
+    </template>
   </div>
 </template>
 
@@ -227,7 +239,13 @@ export default {
   computed:{
     ...mapState(['tutorialStep','todoDataList','isZoomTodoModal']),
     isTodoList(){
-      return this.todoDataList.find(v => {return v.isPick === true})
+      let result = this.todoDataList.find(v => {return v.isPick === true})
+      console.log('isTodoList : ' , result)
+      if(!result || result === undefined){
+        return null
+      }else {
+        return result
+      }
     },
   },
     
@@ -283,7 +301,7 @@ export default {
     }
   },
   methods: {
-    ...mapMutations(['isTutorialStep','setTodoDataList','setIsZoomTodoModal','isPickTodoData']),
+    ...mapMutations(['isTutorialStep','setTodoDataList','setIsZoomTodoModal','isPickTodoData','setIsCategoryTab']),
     weekValue(idx){
       let result = '';
       switch(idx){
@@ -487,6 +505,16 @@ export default {
 </script>
 
 <style lang="scss">
+.fade-enter-active{
+    transition: opacity 2s ease;
+}
+.fade-enter,
+.fade-leave-active{
+    transition: opacity 2s ease;
+    opacity: 0;
+}
+
+
 .card-transition-enter-active{
     transition: opacity 0.3s ease;
 }
@@ -508,7 +536,7 @@ export default {
   flex-wrap: wrap;
   padding: 80px 100px 0px 30px;
   overflow-y: auto;
-  >.top-title{
+  .top-title{
     position: absolute;
     top: 0;
     width: 100%;
@@ -522,7 +550,7 @@ export default {
     font-weight: bold;
     font-size: 18px;
   }
-  >.todo-card-list{
+  .todo-card-list{
     width: 100%;
     >span{
     display: grid;
@@ -1271,7 +1299,7 @@ export default {
   }
   }
   
-  >.side-btn{    
+  .side-btn{    
     position: absolute;
     right: 50px;
     height: 80px;
@@ -1285,6 +1313,49 @@ export default {
     >.anticon-minus-square{
       font-size: 40px;
       color: red;
+    }
+  }
+  .empty{
+    width: 100%;
+    height: 100%;
+    background: #dfe1ed;
+    >.main-template{
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      >.main-img{
+        display: flex;
+        justify-content: center;
+        >img{
+          width: 300px;
+        }
+      }
+      >.title{
+        font-size: 55px;
+        font-weight: bold;
+        font-family: revert;
+        color: #3e536e;
+      }
+      >.sub{
+        font-weight: bold;
+        color: #4b5f82;
+      }
+      >button{
+        border-radius: 5px;
+        border: 3px solid #3e536e;
+        background: #4b5f82;
+        color: white;
+        width: 150px;
+        height: 42px;
+        font-size: 18px;
+        font-weight: bold;
+        font-family: unset;
+        cursor: pointer;
+        margin-top: 20px;
+      }
+      >button:active{
+        border: 0;
+      }
     }
   }
   

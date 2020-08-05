@@ -6,7 +6,7 @@
             <img src="../assets/img/post-icon_w.png" alt="">
             <span>Amatda</span>
           </div>
-          <div class="tab" @click="isCategoryTab = !isCategoryTab" :class="isCategoryTab ? 'on' : ''" :style="tutorialStep.status ? 'pointer-events:none;':''">
+          <div class="tab" @click="setIsCategoryTab(!isCategoryTab)" :class="isCategoryTab ? 'on' : ''" :style="tutorialStep.status ? 'pointer-events:none;':''">
             <a-icon type="menu" />
           </div>
       </div>
@@ -18,22 +18,26 @@
     </a-layout-header>
     <a-layout-content class="body-contents">
       <div class="side-nav" v-if="isCategoryTab">
-        <!-- <div class="logo">
-          
-        </div> -->
-        <!-- <template> -->
           <div v-for="(v,i) in todoDataList" :key="i"
             class="category-contents"
             :class="categoryClass(v,i)"
           >
             <div class="category-title" @click="setTodoDataList({type:'categoryPick' , idx: i})" >
-                <span>{{v.categoryName}}</span>
+                <span v-if="!categoryTitleMod[i]">{{v.categoryName}}</span>
+                <div class="mod-input" v-else>
+                  <input type="text" :id="`mod_input_${i}`" :value="v.categoryName" @input="editInputText(i,$event)" @keyup.enter="categoryTitleMod.splice(i,1,!categoryTitleMod[i])"/>
+                  <div class="mod-btn" @click="categoryTitleMod.splice(i,1,!categoryTitleMod[i])">수정</div>
+                </div>
+                
             </div>
-            <div class="category-mod">
-              <!-- <a-icon type="unordered-list" v-if="i === 0" /> -->
-              <!-- <a-icon type="dash" v-else /> -->
-              <a-icon type="dash" />
+            <div class="category-mod" :class="v.isMod ? 'on' : ''" :style="categoryTitleMod[i] ? 'display:none' : ''">
+              <a-icon type="setting" theme="filled" @click="setTodoDataList({type:'isMod' , idx: i})" :style="tutorialStep.status && todoDataList.length === 1 ? 'pointer-events:none;' : ''" />
+              <div class="mod-template" v-if="v.isMod">
+                <a-icon type="edit" theme="twoTone" two-tone-color="#3bc73c" @click="clickCategoryShowMod(i)"/>
+                <a-icon type="delete" theme="twoTone" two-tone-color="red" @click="setTodoDataList({type:'del' , idx: i})"/>
+              </div>
             </div>
+            
           </div>
         <!-- </template> -->
 
@@ -73,17 +77,20 @@
             </div>            
         </div>
       </div>
-      <nuxt v-if="todoDataList.length !== 0"/>
-      <div v-else class="empty">
-          <div class="main-template" v-if="!tutorialStep.status">
-            <div class="main-img">
-              <img src="../assets/img/post-icon_m.png" alt="logo">
+      <transition name="body-transition">
+        <nuxt />
+        <!-- <div v-show="todoDataList.length === 0" class="empty"> -->
+        <!-- <div v-else class="empty">
+            <div class="main-template" v-if="!tutorialStep.status">
+              <div class="main-img">
+                <img src="../assets/img/post-icon_m.png" alt="logo">
+              </div>
+              <span class="title">Amatda</span>
+              <span class="sub">일정을 기록하고 메모하세요!</span>
+              <button @click="isTutorialStep({type:'status',param:true}) , isCategoryTab = true , isTutorialStep({type:'val', param:1})">Tutorial</button>
             </div>
-            <span class="title">Amatda</span>
-            <span class="sub">일정을 기록하고 메모하세요!</span>
-            <button @click="isTutorialStep({type:'status',param:true}) , isCategoryTab = true , isTutorialStep({type:'val', param:1})">Tutorial</button>
-          </div>
-      </div>
+        </div> -->
+      </transition>
     </a-layout-content>
     <!-- <todoModal v-if="isTodoModal"/> -->
     <ZoomTodoModal v-if="isZoomTodoModal" :categoryData="categoryCreateData"/>
@@ -105,16 +112,16 @@ import ZoomTodoModal from '../components/modal/ZoomTodoModal'
 export default {
   data() {
     return {
-      isCategoryTab: false,
       categoryCreateData:{
         color: '',
         name: ''
       },
       categoryPlusStatus: 0,
+      categoryTitleMod:[],
     }
   },    
   computed: {
-    ...mapState(['tutorialStep','todoDataList','isTodoModal' , 'isZoomTodoModal']),
+    ...mapState(['tutorialStep','todoDataList','isTodoModal' , 'isZoomTodoModal','isCategoryTab']),
   },
   mounted(){
   },
@@ -132,7 +139,18 @@ export default {
     },
   },
   methods: {
-    ...mapMutations(['isTutorialStep','setTodoDataList','setIsZoomTodoModal']),
+    ...mapMutations(['isTutorialStep','setTodoDataList','setIsZoomTodoModal','setIsCategoryTab']),
+    // setTodoDataList({type:'isMod' , idx: i}) , categoryTitleMod.splice(i,1,!categoryTitleMod[i]) , document.getElementById(`mod_input_${i}`).focus()
+    clickCategoryShowMod(idx){
+      this.setTodoDataList({type:'isMod' , idx: idx})
+      this.categoryTitleMod.splice(idx,1,!this.categoryTitleMod[idx])
+      setTimeout(_ => {
+        document.getElementById(`mod_input_${idx}`).focus()
+      },100)
+    },
+    editInputText(i,e){
+      this.setTodoDataList({type:'setCategoryName' , idx: i , value: e.target.value})
+    },
     submitCategory(val){
       console.log('e : ',val)
       if(val === ''){
@@ -145,11 +163,13 @@ export default {
             value: {
               categoryName: this.categoryCreateData.name,
               isPick: true,
+              isMod: false,
               color: this.categoryCreateData.color,
               todoList:[],
             }
           }
         )
+        this.categoryTitleMod.push(false)
         this.categoryPlusStatus = 0
         if(this.tutorialStep){
           this.isTutorialStep({type:'val',param: 3})
@@ -172,6 +192,14 @@ export default {
 }
 </script>
 <style lang="scss">
+.body-transition-enter-active{
+    transition: opacity 1s ease;
+}
+.body-transition-enter,
+.body-transition-leave-active{
+    transition: opacity 1s ease;
+    opacity: 0;
+}
 .tutorial{
   position: fixed;
   left: 155px;
@@ -384,52 +412,105 @@ export default {
       height: 32px;
     }
     >.category-contents{
-      cursor: pointer;
       display: flex;
       height: 42px;
       margin-bottom: 5px;
       >.category-title{
+        z-index: 0;
+        cursor: pointer;
         display: flex;        
         justify-content: center;
         align-items: center;
-        // width: 80%;
-        width: 196px;
-        >span{
-          // font-weight: bold;
-        }
-      }
-      >.category-mod{
-        display: flex;        
-        justify-content: center;
-        align-items: center;        
-        width: 20%; 
-        >i{
-            color: black;
-        }
-      }
-    }
-    >.category-contents.all{
-      border: 1px solid #5d5d5d;
-        // border: 1px solid #ffa40d;
-        >.category-title{
-          background: #d8d8d8;
-        }
-        >.category-mod{
-          // background: #fff2ab;
-          background: #a0a0a0;
-        }
-    }
-    .category-contents.all.on{
-        >.category-title{
-          background: #5d5d5d;
-          >span{
+        width: 100%;
+        >.mod-input{
+          display: grid;
+          grid-template-columns: 70% 30%;
+          width: 80%;
+          >input{
+            text-align: center;
+            border: 0;
+          }
+          >input:focus{
+            outline: none;
+          }
+          >.mod-btn{
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #4b5f82;
+            font-weight: bold;
+            font-size: 12px;
+            border-left: 1px solid;
             color: white;
           }
         }
-        >.category-mod{
-          background: white;
+      }
+      >.category-mod{
+        z-index: 1;
+        display: flex;
+        width: 0;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: all 0.5s ease;
+        background: white;
+        >i{
+            cursor: pointer;
+            font-size: 18px;
         }
+        >.mod-template{
+          position: absolute;
+          left: 225px;
+          height: 42px;
+          width: 84px;
+          // top: 47px;
+          background: white;
+          // border: 1px solid #548cff;
+          border-left: 0px;
+          display: flex;
+          justify-content: space-evenly;
+          align-items: center;
+          font-size: 24px;
+          >.anticon-edit{
+            cursor: pointer;
+            color: #3bc73c;
+          }
+          >.anticon-delete{
+            cursor: pointer;
+            color: red;
+          }
+        }
+      }
     }
+    >.category-contents:hover{
+      >.category-mod{
+        width: 50px;
+        opacity: 1;
+      }
+    }
+    // >.category-contents.all{
+    //   border: 1px solid #5d5d5d;
+    //     // border: 1px solid #ffa40d;
+    //     >.category-title{
+    //       background: #d8d8d8;
+    //     }
+    //     >.category-mod{
+    //       // background: #fff2ab;
+    //       background: #a0a0a0;
+    //     }
+    // }
+    // .category-contents.all.on{
+    //     >.category-title{
+    //       background: #5d5d5d;
+    //       >span{
+    //         color: white;
+    //       }
+    //     }
+    //     >.category-mod{
+    //       background: white;
+    //     }
+    // }
     >.category-contents.yellow{
         border: 1px solid #ffbf54;
         // border: 1px solid #ffa40d;
@@ -437,8 +518,18 @@ export default {
           background: #fff7d1;
         }
         >.category-mod{
-          // background: #fff2ab;
-          background: #ffed89;
+          >i{
+            color: #ffbf54;
+          }
+        }
+        >.category-mod.on{
+          background: #ffbf54;
+          >i{
+            color: white;
+          }
+          >.mod-template{
+            border: 1px solid #ffbf54;
+          }
         }
     }
     .category-contents.yellow.on{
@@ -449,7 +540,6 @@ export default {
           }
         }
         >.category-mod{
-          background: white;
         }
     }
     >.category-contents.red{
@@ -458,7 +548,18 @@ export default {
           background: #ffded1;
         }
         >.category-mod{
-          background: #ffb7ab;
+          >i{
+            color: #ff5954;
+          }
+        }
+        >.category-mod.on{
+          background: #ff5954;
+          >i{
+            color: white;
+          }
+          >.mod-template{
+            border: 1px solid #ff5954;
+          }
         }
     }
     .category-contents.red.on{
@@ -469,7 +570,6 @@ export default {
           }
         }
         >.category-mod{
-          background: white;
         }
     }
     >.category-contents.blue{
@@ -478,7 +578,18 @@ export default {
           background: #d1dbff;
         }
         >.category-mod{
-          background: #abb9ff;
+          >i{
+            color: #548cff;
+          }
+        }
+        >.category-mod.on{
+          background: #548cff;
+          >i{
+            color: white;
+          }
+          >.mod-template{
+            border: 1px solid #548cff;
+          }
         }
     }
     .category-contents.blue.on{
@@ -489,7 +600,6 @@ export default {
           }
         }
         >.category-mod{
-          background: white;
         }
     }
     >.category-contents.green{
@@ -499,8 +609,18 @@ export default {
           background: #d2ffd1;
         }
         >.category-mod{
-          // background: #acffab;
-          background: #8aff99;
+          >i{
+            color: #3bc73c;
+          }
+        }
+        >.category-mod.on{
+          background: #3bc73c;
+          >i{
+            color: white;
+          }
+          >.mod-template{
+            border: 1px solid #3bc73c;
+          }
         }
     }
     .category-contents.green.on{
@@ -511,7 +631,6 @@ export default {
           }
         }
         >.category-mod{
-          background: white;
         }
     }
     >.category-contents.purple{
@@ -520,7 +639,18 @@ export default {
           background: #e9d1ff;
         }
         >.category-mod{
-          background: #dbabff;
+          >i{
+            color: #ba54ff;
+          }
+        }
+        >.category-mod.on{
+          background: #ba54ff;
+          >i{
+            color: white;
+          }
+          >.mod-template{
+            border: 1px solid #ba54ff;
+          }
         }
     }
     .category-contents.purple.on{
@@ -531,7 +661,6 @@ export default {
           }
         }
         >.category-mod{
-          background: white;
         }
     }
 
@@ -688,51 +817,6 @@ export default {
             font-size: 20px;
           }
         }
-      }
-    }
-  }
-  >.empty{
-    width: 100%;
-    height: 100%;
-    background: #dfe1ed;
-    >.main-template{
-      // padding-top: 50px;
-      padding-top: 17vh;
-      display: flex;
-      flex-flow: column;
-      align-items: center;
-      >.main-img{
-        display: flex;
-        justify-content: center;
-        >img{
-          width: 300px;
-        }
-      }
-      >.title{
-        font-size: 55px;
-        font-weight: bold;
-        font-family: revert;
-        color: #3e536e;
-      }
-      >.sub{
-        font-weight: bold;
-        color: #4b5f82;
-      }
-      >button{
-        border-radius: 5px;
-        border: 3px solid #3e536e;
-        background: #4b5f82;
-        color: white;
-        width: 150px;
-        height: 42px;
-        font-size: 18px;
-        font-weight: bold;
-        font-family: unset;
-        cursor: pointer;
-        margin-top: 20px;
-      }
-      >button:active{
-        border: 0;
       }
     }
   }
