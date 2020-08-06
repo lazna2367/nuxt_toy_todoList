@@ -6,8 +6,12 @@
       </div>
       <div class="todo-card-list">
             <transition-group name="card-transition">
-            <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="val.isClose ? 'off' : isTodoList.color ? isTodoList.color : ''" @click="clickTodoIdx = idx">
-              <div class="todo-top">
+            <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="val.isClose ? 'off' : isTodoList.color ? isTodoList.color : ''" @click="clickTodoIdx = idx" :style="`width:${isSize.width}px; height:${isSize.height}px`">
+                <!-- @dragstart="dropTest($event,'start')" -->
+              <div class="drag-template"  draggable  @dragend="dropTest($event,'end')"/>
+              <div class="drag-bottom"/>
+              <div class="drag-right"/>
+              <div class="todo-top" style="cursor:pointer">
                   <template>
                     <div class="del-btn" v-if="isDeleteTodo" @click="setTodoDataList({type: 'delTodo', idx: isTodoList.idx , childIdx: idx})">
                       <a-icon type="delete" theme="twoTone" two-tone-color="red"/>
@@ -234,6 +238,11 @@ export default {
       clickTodoIdx: null,
       clickTodoBodyIdx: null,
       addDateTime: null,
+      isSize: {
+        width: null,
+        height: null
+      }
+      
     }
   },  
   computed:{
@@ -302,6 +311,11 @@ export default {
   },
   methods: {
     ...mapMutations(['isTutorialStep','setTodoDataList','setIsZoomTodoModal','isPickTodoData','setIsCategoryTab']),
+    dropTest(e,type){
+      this.isSize.width = e.layerX
+      this.isSize.height = e.layerY
+      // console.log(`${type === 'start' ? 'start : ' :'end : '}` ,e)
+    },
     weekValue(idx){
       let result = '';
       switch(idx){
@@ -553,13 +567,16 @@ export default {
   .todo-card-list{
     width: 100%;
     >span{
-    display: grid;
-    grid-template-columns: repeat(auto-fit , 300px);
-    width: 100%;
-    justify-content: space-around;
-    row-gap: 30px;
-    column-gap: 42px;
-    row-gap: 42px;
+    // display: grid;
+    // grid-template-columns: repeat(auto-fit , 300px);
+    // width: 100%;
+    // justify-content: space-around;
+    // row-gap: 30px;
+    // column-gap: 42px;
+    // row-gap: 42px;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
 
     // background: white;
     // padding: 50px;
@@ -577,13 +594,40 @@ export default {
     >.todo-card{    
       width: 300px;
       height: 300px;
+      min-width: 300px;
+      min-height: 300px;
       // margin: 15px;
       // margin-bottom: 15px;
       position: relative;
       display: flex;
       flex-flow: column;
+      margin-left: 40px;
+      margin-bottom: 30px;
       // box-shadow: 2px 0px 6px 1px rgba(0, 0, 0, 0.16);
-
+      >.drag-template{
+        position: absolute;
+        width: 101%;
+        height: 101%;
+        cursor: se-resize;
+        z-index: 0;
+        background: #548cff;
+      }
+      >.drag-bottom{
+        position: absolute;
+        width: 95%;
+        height: 101%;
+        z-index: 0;
+        background: #dfe1ed;
+        opacity: 0.4;
+      }
+      >.drag-right{
+        position: absolute;
+        width: 101%;
+        height: 95%;
+        z-index: 0;
+        background: #dfe1ed;
+        opacity: 0.4;
+      }
       >.todo-top{
         width: 100%;
         height: 15%;
@@ -591,6 +635,7 @@ export default {
         justify-content: flex-end;
         align-items: center;
         position: relative;
+        z-index: 1;
         >.zoom-in{
           cursor: pointer;
           position: absolute;
@@ -707,6 +752,7 @@ export default {
         padding-right: 10px;
         overflow: auto;
         -ms-overflow-style: none;
+        z-index: 1;
         &::-webkit-scrollbar {
             display:none;
         }
@@ -1044,8 +1090,8 @@ export default {
           // bottom: 0px;
           // left: 0px;
 
-          width: 60px;
-          height: 60px;
+          width: 63px;
+          height: 63px;
           position: absolute;
           bottom: 0px;
           left: 0px;
@@ -1060,7 +1106,7 @@ export default {
             transform: rotate(45deg);
             border-top: 1px dashed #548cff;
             position: absolute;
-            width: 85px;
+            width: 90px;
             height: 51px;
             left: -30px;
             bottom: -14px;
