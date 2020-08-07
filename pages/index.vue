@@ -5,7 +5,7 @@
         <span>{{isTodoList.categoryName}}</span>
       </div>
       <div class="todo-card-list">
-            <transition name="card-transition">
+            <transition-group name="card-transition">
             <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="val.isClose ? 'off' : isTodoList.color ? isTodoList.color : ''" @click="clickTodoIdx = idx" :style="`width:${val.isSize.width}px; height:${val.isSize.height}px`">
                 <!-- @dragstart="dropTest($event,'start')" -->
               <div class="drag-template"  draggable  @dragend="dropTest($event,idx)" :style="tutorialStep.status ? 'pointer-events:none;' : ''"/>
@@ -186,7 +186,7 @@
                 </div> -->
               </div>
             </div>
-            </transition>
+            </transition-group>
       </div> 
       <div class="side-btn" :style="tutorialStep.status && isTodoList.todoList.length === 1 ? 'pointer-events:none;' : ''" >
           <a-icon type="plus-square" theme="filled" 
