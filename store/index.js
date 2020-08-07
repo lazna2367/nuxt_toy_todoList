@@ -90,6 +90,9 @@ export const mutations = {
             state.todoDataList[payload.idx].todoList.splice(payload.childIdx , 1)
         }else if(payload.type === 'isClose'){
             state.todoDataList[payload.idx].todoList[payload.childIdx].isClose = !state.todoDataList[payload.idx].todoList[payload.childIdx].isClose
+        }else if(payload.type === 'isSize'){
+            state.todoDataList[payload.idx].todoList[payload.childIdx].isSize.width = payload.width
+            state.todoDataList[payload.idx].todoList[payload.childIdx].isSize.height = payload.height
         }
     },
     setIsTodoModal(state , payload){

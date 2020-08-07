@@ -6,12 +6,12 @@
       </div>
       <div class="todo-card-list">
             <transition-group name="card-transition">
-            <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="val.isClose ? 'off' : isTodoList.color ? isTodoList.color : ''" @click="clickTodoIdx = idx" :style="`width:${isSize.width}px; height:${isSize.height}px`">
+            <div class="todo-card" v-for="( val, idx ) in isTodoList.todoList" :key="idx" :class="val.isClose ? 'off' : isTodoList.color ? isTodoList.color : ''" @click="clickTodoIdx = idx" :style="`width:${val.isSize.width}px; height:${val.isSize.height}px`">
                 <!-- @dragstart="dropTest($event,'start')" -->
-              <div class="drag-template"  draggable  @dragend="dropTest($event,'end')"/>
+              <div class="drag-template"  draggable  @dragend="dropTest($event,idx)" :style="tutorialStep.status ? 'pointer-events:none;' : ''"/>
               <div class="drag-bottom"/>
               <div class="drag-right"/>
-              <div class="todo-top" style="cursor:pointer">
+              <div class="todo-top">
                   <template>
                     <div class="del-btn" v-if="isDeleteTodo" @click="setTodoDataList({type: 'delTodo', idx: isTodoList.idx , childIdx: idx})">
                       <a-icon type="delete" theme="twoTone" two-tone-color="red"/>
@@ -187,7 +187,7 @@
               </div>
             </div>
             </transition-group>
-      </div>
+      </div> 
       <div class="side-btn" :style="tutorialStep.status && isTodoList.todoList.length === 1 ? 'pointer-events:none;' : ''" >
           <a-icon type="plus-square" theme="filled" 
                 @click="setTodoDataList({
@@ -197,6 +197,10 @@
                     idx: isTodoList.todoList.length,
                     isTab: false,
                     isClose: false,
+                    isSize: {
+                      width: 300,
+                      height: 300,
+                    },
                     bodyData:[],
                   }
                 }), 
@@ -311,10 +315,10 @@ export default {
   },
   methods: {
     ...mapMutations(['isTutorialStep','setTodoDataList','setIsZoomTodoModal','isPickTodoData','setIsCategoryTab']),
-    dropTest(e,type){
-      this.isSize.width = e.layerX
-      this.isSize.height = e.layerY
-      // console.log(`${type === 'start' ? 'start : ' :'end : '}` ,e)
+    dropTest(e,idx){
+      this.setTodoDataList({type: 'isSize', idx: this.isTodoList.idx , childIdx: idx , width: e.layerX , height: e.layerY})
+      // this.isSize.width = e.layerX
+      // this.isSize.height = e.layerY
     },
     weekValue(idx){
       let result = '';
@@ -606,31 +610,31 @@ export default {
       // box-shadow: 2px 0px 6px 1px rgba(0, 0, 0, 0.16);
       >.drag-template{
         position: absolute;
-        width: 101%;
-        height: 101%;
+        width: calc(100% + 3px);
+        height: calc(100% + 3px);
         cursor: se-resize;
         z-index: 0;
-        background: #548cff;
+        // background: #548cff;
       }
       >.drag-bottom{
         position: absolute;
-        width: 95%;
-        height: 101%;
+        width: calc(100% - 20px);
+        height: calc(100% + 3px);
         z-index: 0;
         background: #dfe1ed;
         opacity: 0.4;
       }
       >.drag-right{
         position: absolute;
-        width: 101%;
-        height: 95%;
+        width: calc(100% + 3px);
+        height: calc(100% - 20px);
         z-index: 0;
         background: #dfe1ed;
         opacity: 0.4;
       }
       >.todo-top{
         width: 100%;
-        height: 15%;
+        height: 45px;
         display: flex;
         justify-content: flex-end;
         align-items: center;
@@ -746,7 +750,7 @@ export default {
       }
       >.todo-body{
         width: 100%;
-        height: 85%;
+        height: 100%;
         padding-top: 10px;
         padding-left: 10px;
         padding-right: 10px;
@@ -824,7 +828,7 @@ export default {
         }
         >.img-body{
           width: 100%;
-          height: 278px;
+          // height: 278px;
           margin-bottom: 10px;
           position: relative;
           >img{
@@ -879,8 +883,10 @@ export default {
           // height: 204px;
           margin-bottom: 10px;
           display: flex;
-          justify-content: center;
-          flex-wrap: wrap;
+          flex-direction: column;
+          align-items: center;
+          // justify-content: center;
+          // flex-wrap: wrap;
           >.calendar-top{
             width: 192px;
             height: 31px;
@@ -1084,24 +1090,12 @@ export default {
           }
         }
         >.todo-check{
-          // width: 60px;
-          // height: 60px;
-          // position: absolute;
-          // bottom: 0px;
-          // left: 0px;
-
           width: 63px;
           height: 63px;
           position: absolute;
           bottom: 0px;
           left: 0px;
           >.check-line{
-            // transform: rotate(45deg);
-            // border-top: 2px dashed #548cff;
-            // position: absolute;
-            // width: 84px;
-            // left: -12px;
-            // bottom: 30px;
 
             transform: rotate(45deg);
             border-top: 1px dashed #548cff;
@@ -1129,6 +1123,16 @@ export default {
     }
     >.todo-card.off{
       border: 1px solid #5d5d5d;
+      >.drag-template{
+        background: #5d5d5d;
+      }
+      >.drag-bottom{
+
+      }
+      >.drag-right{
+
+      }
+
       >.todo-top{
         background: #a0a0a0;
       }
@@ -1149,6 +1153,9 @@ export default {
     
     >.todo-card.yellow{
       border: 1px solid #ffbf54;
+      >.drag-template{
+        background: #ffbf54;
+      }
       >.todo-top{
         background: #ffed89;
         .arrow{
@@ -1188,6 +1195,9 @@ export default {
     }
     >.todo-card.red{
       border: 1px solid #ff5954;
+      >.drag-template{
+        background: #ff5954;
+      }
       >.todo-top{
         background: #ffb7ab;
         .arrow{
@@ -1227,6 +1237,9 @@ export default {
     }
     >.todo-card.blue{
       border: 1px solid #548cff;
+      >.drag-template{
+        background: #548cff;
+      }
       >.todo-top{
         background: #abb9ff;
         .arrow{
@@ -1266,6 +1279,9 @@ export default {
     }
     >.todo-card.green{
       border: 1px solid #3bc73c;
+      >.drag-template{
+        background: #3bc73c;
+      }
       >.todo-top{
         background: #8aff99;
         .arrow{
@@ -1305,6 +1321,9 @@ export default {
     }
     >.todo-card.purple{
       border: 1px solid #ba54ff;
+      >.drag-template{
+        background: #ba54ff;
+      }
       >.todo-top{
         background: #dbabff;
         .arrow{
