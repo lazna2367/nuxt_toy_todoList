@@ -1,6 +1,6 @@
 <template>
   <a-layout style="background:none;">
-    <a-layout-header class="container-header">
+    <header class="container-header">
       <div class="top-nav-logo">
           <div class="logo">
             <img src="../assets/img/post-icon_w.png" alt="">
@@ -9,13 +9,16 @@
           <div class="tab" @click="setIsCategoryTab(!isCategoryTab)" :class="isCategoryTab ? 'on' : ''" :style="tutorialStep.status ? 'pointer-events:none;':''">
             <a-icon type="menu" />
           </div>
+          <div class="mobile-tab">
+
+          </div>
       </div>
       <div class="top-nav-category">
           <!-- <a href="#" @click.prevent="$router.push('/todo')"><p><a-icon type="login" /></p></a>
           <a href="#" @click.prevent="$router.push('/')"><p><a-icon type="bell" /></p></a>
           <a href="#" @click.prevent="$router.push('/')"><p><a-icon type="user" /></p></a> -->
       </div>
-    </a-layout-header>
+    </header>
     <a-layout-content class="body-contents">
       <div class="side-nav" v-if="isCategoryTab">
           <div v-for="(v,i) in todoDataList" :key="i"
@@ -107,6 +110,7 @@
 </template>
 <script>
 import { mapState , mapMutations , mapActions } from 'vuex';
+import { swiper, swiperSlide } from 'vue-awesome-swiper';
 // import todoModal from '../components/modal/todoModal'
 import ZoomTodoModal from '../components/modal/ZoomTodoModal'
 export default {
@@ -126,7 +130,9 @@ export default {
   mounted(){
   },
   components: {
-    ZoomTodoModal
+    ZoomTodoModal,
+    swiper,
+    swiperSlide,
   },
   watch:{
     categoryPlusStatus(){
@@ -192,6 +198,33 @@ export default {
 }
 </script>
 <style lang="scss">
+@media screen and (max-width: 766px) {
+  .container-header{
+      grid-template-rows: 1fr 1fr !important;
+        grid-template-columns: none !important;
+        height: 84px !important;
+      >.top-nav-logo{
+        width: 100% !important;
+        >.logo{
+          width: 100% !important;
+        }
+        >.tab{
+          display: none !important;  
+        }
+      }
+      >.top-nav-category{
+        // display: none !important;
+      }
+  }
+  .body-contents{
+    height: calc(100vh - 84px) !important;
+    margin-top: 84px !important;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+        display:none;
+    }
+  }
+}
 .body-transition-enter-active{
     transition: opacity 1s ease;
 }
@@ -293,10 +326,10 @@ export default {
 .container-header{
   // background: white !important; 
   // box-shadow: 0px 0px 5px 1px gray;  
-  line-height:0 !important;
-  padding:0 !important;
-  height: 42px !important;
-  background: white !important;
+  line-height:0 ;
+  padding:0 ;
+  height: 42px ;
+  background: white ;
   // box-shadow: 3px 0 15px 6px rgba(0, 0, 0, 0.16);
   position: fixed;
   width: 100%;
