@@ -203,7 +203,20 @@ http://amatda.site/
 
 <br/>
 
+<hr/>
 
+**1. Postit-On/Off
+
+<span>
+  <img src="https://user-images.githubusercontent.com/38236734/90852499-97484080-e3b2-11ea-9b81-19d979cf9c5a.png" width="400px"/>
+  <img src="https://user-images.githubusercontent.com/38236734/90852595-d7a7be80-e3b2-11ea-80d9-467e9082c4d3.png" width="400px"/>
+</span>
+
+<br/>
+
++ 생성된 포스트잇을 좌측 하단 버튼을 눌러서 활성화/비활성화 하여 상태관리가 가능합니다.
+
+<br/>
 
 ------------
 # TODO
