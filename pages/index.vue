@@ -606,7 +606,7 @@ export default {
       display: flex;
       flex-flow: column;
       margin-left: 40px;
-      margin-bottom: 30px;
+      margin-bottom: 40px; //hsl
       // box-shadow: 2px 0px 6px 1px rgba(0, 0, 0, 0.16);
       >.drag-template{
         position: absolute;
@@ -639,7 +639,7 @@ export default {
         justify-content: flex-end;
         align-items: center;
         position: relative;
-        z-index: 1;
+        // z-index: 1;
         >.zoom-in{
           cursor: pointer;
           position: absolute;
