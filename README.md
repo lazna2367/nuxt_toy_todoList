@@ -205,7 +205,7 @@ http://amatda.site/
 
 <hr/>
 
-**1. Postit-On/Off
+**2. Postit-On/Off **
 
 <span>
   <img src="https://user-images.githubusercontent.com/38236734/90852499-97484080-e3b2-11ea-9b81-19d979cf9c5a.png" width="400px"/>
