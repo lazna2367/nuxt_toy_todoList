@@ -14,10 +14,20 @@ export const state = () => ({
     isZoomTodoModal: false,
     tutorialStep: {status:false, val:null},
     isCategoryTab: false,
+    chattingDataList: [],
     
 })
 
 export const mutations = {
+    setChattingDataList(state, payload){
+        if(payload.type === 'set'){
+            state.chattingDataList = payload.param
+        }else if(payload.type === 'concat'){
+            state.chattingDataList = state.chattingDataList.concat(payload.param)
+        }else if(payload.type === 'push'){
+            state.chattingDataList.push(payload.param)
+        }
+    },
     setIsCategoryTab(state, payload){
         state.isCategoryTab = payload
     },

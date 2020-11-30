@@ -4,7 +4,7 @@
       <div class="top-nav-logo">
           <div class="logo">
             <img src="../assets/img/post-icon_w.png" alt="">
-            <span>Amatda</span>
+            <span>Amatda{{chattingDataList}}</span>
           </div>
           <div class="tab" @click="setIsCategoryTab(!isCategoryTab)" :class="isCategoryTab ? 'on' : ''" :style="tutorialStep.status ? 'pointer-events:none;':''">
             <a-icon type="menu" />
@@ -17,6 +17,11 @@
           <!-- <a href="#" @click.prevent="$router.push('/todo')"><p><a-icon type="login" /></p></a>
           <a href="#" @click.prevent="$router.push('/')"><p><a-icon type="bell" /></p></a>
           <a href="#" @click.prevent="$router.push('/')"><p><a-icon type="user" /></p></a> -->
+          <a href="#" @click.prevent="setIsChat" :style="isChat ? 'background:#f1f2f6 ' : ''">
+            <p>
+              <a-icon type="message" :style="isChat ? 'color: #3e536e' : ''" />
+            </p>
+          </a>
       </div>
     </header>
     <a-layout-content class="body-contents">
@@ -25,13 +30,12 @@
             class="category-contents"
             :class="categoryClass(v,i)"
           >
-            <div class="category-title" @click="setTodoDataList({type:'categoryPick' , idx: i})" >
+            <div class="category-title" @click="setTodoDataList({type:'categoryPick' , idx: i})">
                 <span v-if="!categoryTitleMod[i]">{{v.categoryName}}</span>
                 <div class="mod-input" v-else>
                   <input type="text" :id="`mod_input_${i}`" :value="v.categoryName" @input="editInputText(i,$event)" @keyup.enter="categoryTitleMod.splice(i,1,!categoryTitleMod[i])"/>
                   <div class="mod-btn" @click="categoryTitleMod.splice(i,1,!categoryTitleMod[i])">수정</div>
                 </div>
-                
             </div>
             <div class="category-mod" :class="v.isMod ? 'on' : ''" :style="categoryTitleMod[i] ? 'display:none' : ''">
               <a-icon type="setting" theme="filled" @click="setTodoDataList({type:'isMod' , idx: i})" :style="tutorialStep.status && todoDataList.length === 1 ? 'pointer-events:none;' : ''" />
@@ -94,6 +98,22 @@
             </div>
         </div> -->
       </transition>
+      <div id="chatting" v-if="isChat">
+        <div class="chat-template">
+          <div class="chat-title">실시간 채팅창</div>
+          <div class="chat-body" id="chat-body">
+            <div class="message" v-for="(v,i) in chatData" :key="i">
+              <div class="nick">{{v.name}}</div>
+              <div class="chat">{{v.value}}</div>
+              <div class="date">{{$moment(v.date).format('YYYY-MM-DD HH:mm:ss')}}</div>
+            </div>
+          </div>
+          <div class="chat-input">
+              <input type="text" placeholder="메시지를 입력 해주세요." :value="chattingInput" @input="setChattingInput($event)" @keydown.enter="setChatData" >
+              <button @click="setChatData">입력</button>
+          </div>
+        </div>
+      </div>
     </a-layout-content>
     <!-- <todoModal v-if="isTodoModal"/> -->
     <ZoomTodoModal v-if="isZoomTodoModal" :categoryData="categoryCreateData"/>
@@ -122,12 +142,28 @@ export default {
       },
       categoryPlusStatus: 0,
       categoryTitleMod:[],
+      isChat: false,
+      chatData: [
+        {name:'asd', value:'1', date:'2020-11-20 17:57:00'},
+        {name:'asd', value:'2', date:'2020-11-20 17:58:00'},
+        {name:'asd', value:'3', date:'2020-11-20 17:59:00'},
+        {name:'asd', value:'4', date:'2020-11-20 18:00:00'},
+        {name:'asdqwe', value:'1', date:'2020-11-20 18:20:00'},
+        {name:'asdqwe', value:'2', date:'2020-11-20 18:21:00'},
+        {name:'asdqwe', value:'3', date:'2020-11-20 18:22:00'}
+      ],
+      chattingInput:'',
     }
   },    
   computed: {
-    ...mapState(['tutorialStep','todoDataList','isTodoModal' , 'isZoomTodoModal','isCategoryTab']),
+    ...mapState(['tutorialStep','todoDataList','isTodoModal' , 'isZoomTodoModal','isCategoryTab','chattingDataList']),
   },
   mounted(){
+    
+    // this.fb_func_map.chat_init()
+    // this.fb_func_map.signInAnonymously()
+    // this.fb_func_map.onAuthStateChanged()
+    // this.fb_func_map.loadMessage()
   },
   components: {
     ZoomTodoModal,
@@ -143,10 +179,36 @@ export default {
         }
       }
     },
+    isChat(){
+      if(this.isChat){
+        setTimeout(() => {
+          let isScroll = document.getElementById('chat-body')
+          isScroll.scrollTop = isScroll.scrollHeight;
+        },10)
+      }
+    }
   },
   methods: {
-    ...mapMutations(['isTutorialStep','setTodoDataList','setIsZoomTodoModal','setIsCategoryTab']),
+    ...mapMutations(['isTutorialStep','setTodoDataList','setIsZoomTodoModal','setIsCategoryTab','setChattingDataList']),
     // setTodoDataList({type:'isMod' , idx: i}) , categoryTitleMod.splice(i,1,!categoryTitleMod[i]) , document.getElementById(`mod_input_${i}`).focus()
+    setChatData(){
+      if(this.chattingInput.length === 0){
+        return false
+      }
+      this.fb_func_map.setMessage(this.chattingInput)
+
+      this.chattingInput = '';
+      setTimeout(() => {
+          let isScroll = document.getElementById('chat-body')
+          isScroll.scrollTop = isScroll.scrollHeight;
+      },10)
+    },
+    setChattingInput(evt){
+      this.chattingInput = evt.target.value
+    },
+    setIsChat(){
+      this.isChat = !this.isChat
+    },
     clickCategoryShowMod(idx){
       this.setTodoDataList({type:'isMod' , idx: idx})
       this.categoryTitleMod.splice(idx,1,!this.categoryTitleMod[idx])
@@ -853,6 +915,108 @@ export default {
       }
     }
   }
+  >#chatting{
+    width: 310px;
+    height: calc(100vh - 42px);
+    z-index: 1;
+    padding: 16px;
+    box-shadow: 0px 27px 19px 0px rgba(0, 0, 0, 0.4);
+    background: #f1f2f6;
+    flex-shrink: 0;
+    >.chat-template{
+      display: grid;
+      grid-template-rows: 1fr 10fr 1.5fr;
+      box-shadow: 0px 0px 11px 4px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      height: 100%;
+      background: white;
+      border-radius: 8px;
+      >.chat-title{
+        width: 100%;
+        background: #3e536e;
+        border-radius: 8px 8px 0px 0px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 15px;
+        font-weight: bold;
+      }
+      >.chat-body{
+        padding: 14px;
+        max-height: 500px;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+            width: 5px;
+            background: none;
+        }
+        &::-webkit-scrollbar-thumb {
+            background: #3e536e;
+            border-radius: 6px;
+            height: 40px;
+        }
+        &::-webkit-scrollbar-track {
+            background: none;
+        }
+        >.message{
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: flex-end;
+          >.nick{
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+            font-weight: bold;
+            margin-bottom: 8px;
+          }
+          >.chat{
+            background: #dfe1ed;
+            // min-width: 34px;
+            // text-align: center;
+            padding: 8px;
+            border-radius: 12px;
+            min-height: 34px;
+          }
+          >.date{
+            display: flex;
+            justify-content: flex-end;
+            width: 100%;
+            font-size: 12px;
+            color: #a0a0a0;
+            margin-bottom: 8px;
+          }
+        }
+      }
+      >.chat-input{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-top: 1px solid #b3b3b3;
+        >input{
+          width: 180px;
+          height: 34px;
+          border: 0px;
+          border-bottom: 1px solid gray;
+          outline: none;
+        }
+        >input:focus{
+          border-bottom: 1px solid #3e536e;
+        }
+        >button{
+          width: 50px;
+          height: 34px;
+          border: 0;
+          margin-left: 10px;
+          background: #4b5f82;
+          color: white;
+          border-radius: 3px;
+          outline: none;
+          font-weight: bold;
+        }
+      }
+    } 
+  }
+  
 }
 // .body-contents:after {
 //   content: '';

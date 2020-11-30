@@ -14,17 +14,20 @@
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/dotenv": "^1.4.0",
     "ant-design-vue": "^1.5.4",
+    "firebase": "^8.0.2",
     "luxon": "^1.24.1",
     "moment": "2.24.0",
     "node-sass": "^4.14.1",
     "nuxt": "^2.0.0",
-    "vue-awesome-swiper": "^3.1.3",
     "sass-loader": "^8.0.2",
+    "vue-awesome-swiper": "^3.1.3",
     "vue-datetime": "^1.0.0-beta.13",
     "weekstart": "^1.0.1"
   },
   "resolutions": {
     "moment": "2.24.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "firebase-tools": "^8.16.2"
+  }
 }

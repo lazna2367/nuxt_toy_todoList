@@ -44,7 +44,8 @@ export default {
     '@/plugins/ant.js' ,
     '@/plugins/moment.js',
     '@/plugins/vue-datetime',
-    '@/plugins/swiper.js'
+    '@/plugins/swiper.js',
+    '@/plugins/firebase.js'
   ],
   /*
   ** Nuxt.js dev-modules
