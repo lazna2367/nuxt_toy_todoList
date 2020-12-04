@@ -4,7 +4,7 @@
       <div class="top-nav-logo">
           <div class="logo">
             <img src="../assets/img/post-icon_w.png" alt="">
-            <span>Amatda{{chattingDataList}}</span>
+            <span>Amatda</span>
           </div>
           <div class="tab" @click="setIsCategoryTab(!isCategoryTab)" :class="isCategoryTab ? 'on' : ''" :style="tutorialStep.status ? 'pointer-events:none;':''">
             <a-icon type="menu" />
@@ -98,15 +98,18 @@
             </div>
         </div> -->
       </transition>
-      <div id="chatting" v-if="isChat">
+      <div id="chatting" v-show="isChat">
         <div class="chat-template">
           <div class="chat-title">실시간 채팅창</div>
+          <!-- {{chattingDataList}} -->
           <div class="chat-body" id="chat-body">
-            <div class="message" v-for="(v,i) in chatData" :key="i">
-              <div class="nick">{{v.name}}</div>
-              <div class="chat">{{v.value}}</div>
-              <div class="date">{{$moment(v.date).format('YYYY-MM-DD HH:mm:ss')}}</div>
-            </div>
+            <div class="message" v-for="(v,i) in chattingDataList.filter(v => !v.deleted)" :key="i" :class="userId === v.name ? 'me' : ''">
+              <div class="nick" @click="setDeleteMessage(v.text, v.timestamp,i)">익명사용자({{v.name.slice(0,5)}})</div>
+              <div class="chat">{{v.text}}</div>
+              <!-- <div class="date">{{$moment(v.timestamp.seconds,'X').format('YYYY-MM-DD HH:mm:ss')}}</div> -->
+              <div class="date">{{v.timestamp}}</div>
+              <!-- {{v}} -->
+            </div> 
           </div>
           <div class="chat-input">
               <input type="text" placeholder="메시지를 입력 해주세요." :value="chattingInput" @input="setChattingInput($event)" @keydown.enter="setChatData" >
@@ -143,27 +146,23 @@ export default {
       categoryPlusStatus: 0,
       categoryTitleMod:[],
       isChat: false,
-      chatData: [
-        {name:'asd', value:'1', date:'2020-11-20 17:57:00'},
-        {name:'asd', value:'2', date:'2020-11-20 17:58:00'},
-        {name:'asd', value:'3', date:'2020-11-20 17:59:00'},
-        {name:'asd', value:'4', date:'2020-11-20 18:00:00'},
-        {name:'asdqwe', value:'1', date:'2020-11-20 18:20:00'},
-        {name:'asdqwe', value:'2', date:'2020-11-20 18:21:00'},
-        {name:'asdqwe', value:'3', date:'2020-11-20 18:22:00'}
-      ],
       chattingInput:'',
+      delLimit:{
+        count: 0,
+        pickIdx: null
+      }
     }
   },    
   computed: {
-    ...mapState(['tutorialStep','todoDataList','isTodoModal' , 'isZoomTodoModal','isCategoryTab','chattingDataList']),
+    ...mapState(['tutorialStep','todoDataList','isTodoModal' , 'isZoomTodoModal','isCategoryTab','chattingDataList','userId']),
   },
   mounted(){
-    
-    // this.fb_func_map.chat_init()
-    // this.fb_func_map.signInAnonymously()
-    // this.fb_func_map.onAuthStateChanged()
-    // this.fb_func_map.loadMessage()
+    console.log('this : ' ,this)
+    this.$fbs({type:'init'})
+    this.$fbs({type:'all'})
+    this.$fbs({type:'signInAnonymously'})
+    this.$fbs({type:'onAuthStateChanged'})
+    this.$fbs({type:'loadMessage'})
   },
   components: {
     ZoomTodoModal,
@@ -186,22 +185,47 @@ export default {
           isScroll.scrollTop = isScroll.scrollHeight;
         },10)
       }
-    }
-  },
-  methods: {
-    ...mapMutations(['isTutorialStep','setTodoDataList','setIsZoomTodoModal','setIsCategoryTab','setChattingDataList']),
-    // setTodoDataList({type:'isMod' , idx: i}) , categoryTitleMod.splice(i,1,!categoryTitleMod[i]) , document.getElementById(`mod_input_${i}`).focus()
-    setChatData(){
-      if(this.chattingInput.length === 0){
-        return false
-      }
-      this.fb_func_map.setMessage(this.chattingInput)
-
-      this.chattingInput = '';
+    },
+    chattingDataList(){
       setTimeout(() => {
           let isScroll = document.getElementById('chat-body')
           isScroll.scrollTop = isScroll.scrollHeight;
       },10)
+    }
+      
+  },
+  methods: {
+    ...mapMutations(['isTutorialStep','setTodoDataList','setIsZoomTodoModal','setIsCategoryTab','setChattingDataList']),
+    // setTodoDataList({type:'isMod' , idx: i}) , categoryTitleMod.splice(i,1,!categoryTitleMod[i]) , document.getElementById(`mod_input_${i}`).focus()
+    setDeleteMessage(text,timestamp,idx){
+      if(idx === this.delLimit.pickIdx){
+        this.delLimit.count += 1
+      }else {
+        this.delLimit.pickIdx = idx
+        this.delLimit.count = 0
+      }
+
+      if(this.delLimit.count >= 5){
+        let param = {
+          type: 'delMessage',
+          text: text,
+          timestamp: timestamp
+        }
+        this.$fbs(param)
+
+        this.delLimit.count = 0
+        this.delLimit.pickIdx = null
+      }
+
+    },
+    setChatData(){
+      if(this.chattingInput.length === 0){
+        return false
+      }
+      this.$fbs({type:'setMessage', text: this.chattingInput})
+      // this.fb_func_map.setMessage(this.chattingInput)
+
+      this.chattingInput = '';
     },
     setChattingInput(evt){
       this.chattingInput = evt.target.value
@@ -916,13 +940,16 @@ export default {
     }
   }
   >#chatting{
-    width: 310px;
+    width: 386px;
     height: calc(100vh - 42px);
     z-index: 1;
     padding: 16px;
     box-shadow: 0px 27px 19px 0px rgba(0, 0, 0, 0.4);
     background: #f1f2f6;
     flex-shrink: 0;
+    position: fixed;
+    top: 42px;
+    right: 0px;
     >.chat-template{
       display: grid;
       grid-template-rows: 1fr 10fr 1.5fr;
@@ -944,7 +971,7 @@ export default {
       }
       >.chat-body{
         padding: 14px;
-        max-height: 500px;
+        // max-height: 500px;
         overflow-y: auto;
         &::-webkit-scrollbar {
             width: 5px;
@@ -961,10 +988,9 @@ export default {
         >.message{
           display: flex;
           flex-wrap: wrap;
-          justify-content: flex-end;
           >.nick{
+            user-select: none;
             display: flex;
-            justify-content: flex-end;
             width: 100%;
             font-weight: bold;
             margin-bottom: 8px;
@@ -979,11 +1005,19 @@ export default {
           }
           >.date{
             display: flex;
-            justify-content: flex-end;
             width: 100%;
             font-size: 12px;
             color: #a0a0a0;
             margin-bottom: 8px;
+          }
+        }
+        >.message.me{
+          justify-content: flex-end;
+          >.nick{
+            justify-content: flex-end;
+          }
+          >.date{
+            justify-content: flex-end;
           }
         }
       }
@@ -993,7 +1027,7 @@ export default {
         align-items: center;
         border-top: 1px solid #b3b3b3;
         >input{
-          width: 180px;
+          width: 240px;
           height: 34px;
           border: 0px;
           border-bottom: 1px solid gray;

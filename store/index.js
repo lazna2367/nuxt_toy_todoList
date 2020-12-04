@@ -15,10 +15,28 @@ export const state = () => ({
     tutorialStep: {status:false, val:null},
     isCategoryTab: false,
     chattingDataList: [],
+    userId: null,
+
+    deleteIdx:{
+        idx: null,
+        count: 0,
+    }
     
 })
 
 export const mutations = {
+    setDeleteIdx(state, payload){
+        if(payload.type === 'countUp'){
+            state.deleteIdx.count += 1
+        }else if(payload.type === 'countReset') {
+            state.deleteIdx.count = 0
+        }else if(payload.type === 'pickIdx') {
+            deleteIdx.idx = payload.idx
+        }
+    },
+    setUserId(state, payload){
+        state.userId = payload
+    },
     setChattingDataList(state, payload){
         if(payload.type === 'set'){
             state.chattingDataList = payload.param
@@ -26,6 +44,11 @@ export const mutations = {
             state.chattingDataList = state.chattingDataList.concat(payload.param)
         }else if(payload.type === 'push'){
             state.chattingDataList.push(payload.param)
+        }else if(payload.type === 'deleted'){
+            console.log('payload.idx : ' , payload.idx)
+            state.chattingDataList[payload.idx].deleted = payload.deleted
+        }else if(payload.type ==='remove'){
+            state.chattingDataList.splice(payload.idx,1)
         }
     },
     setIsCategoryTab(state, payload){
