@@ -3,7 +3,7 @@
 + 현재 데스크탑 해상도 기준으로 개발되어있습니다.(모바일 반응형 미적용)
 ------------
 # Link
-http://amatda.site/
+http://amatda.me/
 # 소개
 <img src="https://user-images.githubusercontent.com/38236734/90749345-4c74ed00-e30e-11ea-92b5-d795e28c471e.png"/>
 
