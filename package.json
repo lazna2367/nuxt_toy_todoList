@@ -16,7 +16,7 @@
     "ant-design-vue": "^1.5.4",
     "firebase": "^8.0.2",
     "luxon": "^1.24.1",
-    "moment": "2.24.0",
+    "moment": "2.29.2",
     "nuxt": "^2.0.0",
     "sass": "^1.53.0",
     "sass-loader": "^8.0.2",
@@ -25,7 +25,7 @@
     "weekstart": "^1.0.1"
   },
   "resolutions": {
-    "moment": "2.24.0"
+    "moment": "2.29.2"
   },
   "devDependencies": {
     "firebase-tools": "^8.16.2"
