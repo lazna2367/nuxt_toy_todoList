@@ -15,7 +15,7 @@
     "@nuxtjs/dotenv": "^1.4.0",
     "ant-design-vue": "^1.5.4",
     "firebase": "^8.0.2",
-    "luxon": "^1.24.1",
+    "luxon": "^1.28.1",
     "moment": "2.24.0",
     "nuxt": "^2.0.0",
     "sass": "^1.53.0",
