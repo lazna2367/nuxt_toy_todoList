@@ -28,6 +28,6 @@
     "moment": "2.24.0"
   },
   "devDependencies": {
-    "firebase-tools": "^8.16.2"
+    "firebase-tools": "^11.22.0"
   }
 }
